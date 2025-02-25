@@ -154,7 +154,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Rafael Paragon - Initial work
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments 
 
 - [React](https://reactjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
