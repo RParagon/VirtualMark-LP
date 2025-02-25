@@ -1,18 +1,9 @@
-// Blog.tsx
 import { useState, useEffect } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { motion, useScroll, useTransform, AnimatePresence, Variants } from 'framer-motion'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { usePosts } from '../contexts/PostContext'
 import { supabase } from '../lib/supabase'
-
-// Função auxiliar para criar "slug"
-const slugify = (text: string) => {
-  return text.toString().toLowerCase().normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
-}
 
 interface BlogPost {
   id: string
@@ -26,19 +17,14 @@ interface BlogPost {
   featured?: boolean
 }
 
-// Definir as variantes usadas no featured post
-const featuredVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
-  }
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
 }
 
 const Blog = () => {
@@ -75,7 +61,7 @@ const Blog = () => {
       setEmail('')
     } catch (error) {
       console.error('Error:', error)
-      alert('Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.')
+      alert('Ocorreu um erro. Por favor, tente novamente.')
     }
   }
 
@@ -94,10 +80,6 @@ const Blog = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost)
 
-  const paginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber)
-  }
-
   useEffect(() => {
     setCurrentPage(1)
   }, [searchQuery, selectedCategory])
@@ -107,17 +89,24 @@ const Blog = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5)
 
-  const containerVariants: Variants = {
+  // Variantes de animação
+  const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   }
 
-  const itemVariants: Variants = {
+  const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  }
+
+  const featuredVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, type: "spring", stiffness: 100, damping: 15 }
+    }
   }
 
   return (
@@ -130,39 +119,16 @@ const Blog = () => {
         }}
         className="relative py-32 px-4 sm:px-6 lg:px-8 text-center overflow-hidden"
       >
-        {/* Cabeçalho com animação */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 max-w-4xl mx-auto"
-        >
-          <motion.h1
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="text-6xl md:text-7xl font-black mb-12 mt-8 relative inline-block tracking-tight"
-          >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-4xl mx-auto">
+          <motion.h1 initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} className="text-6xl md:text-7xl font-black mb-12 mt-8 relative inline-block tracking-tight">
             <span className="relative inline-block bg-gradient-to-r from-primary-500 via-primary-400 to-primary-600 text-transparent bg-clip-text">
-              Transforme seu
-              <br />
-              Negócio Digital
+              Transforme seu<br />Negócio Digital
             </span>
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium mb-12"
-          >
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
             Conteúdo exclusivo sobre Marketing Digital, Vendas e Tecnologia para levar sua empresa ao próximo nível.
           </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex justify-center gap-4 mb-16"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="flex justify-center gap-4 mb-16">
             <button
               onClick={() => window.location.href = '#newsletter'}
               className="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-primary-600/20 text-lg animate-glow"
@@ -171,22 +137,14 @@ const Blog = () => {
             </button>
           </motion.div>
         </motion.div>
-      
-        <motion.div
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
+        <motion.div className="absolute inset-0 z-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
           <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 to-transparent" />
-          <motion.div
-            className="absolute top-0 left-0 w-full h-full"
-            animate={{ background: ['radial-gradient(circle at 0% 0%, rgba(239, 68, 68, 0.1) 0%, transparent 50%)', 'radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.1) 0%, transparent 50%)'] }}
-            transition={{ duration: 5, repeat: Infinity, repeatType: 'reverse' }}
-          />
+          <motion.div className="absolute top-0 left-0 w-full h-full" animate={{ background: [
+            'radial-gradient(circle at 0% 0%, rgba(239, 68, 68, 0.1) 0%, transparent 50%)',
+            'radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.1) 0%, transparent 50%)'
+          ] }} transition={{ duration: 5, repeat: Infinity, repeatType: 'reverse' }} />
         </motion.div>
       </motion.header>
-
       <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
@@ -206,17 +164,18 @@ const Blog = () => {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedCategory === category ? 'bg-primary-500 text-white' : 'bg-gray-900/50 text-gray-400 hover:bg-gray-800'}`}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                      selectedCategory === category ? 'bg-primary-500 text-white' : 'bg-gray-900/50 text-gray-400 hover:bg-gray-800'
+                    }`}
                   >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </button>
                 ))}
               </motion.div>
             </motion.div>
-
             {featuredPost && (
               <motion.div variants={featuredVariants} initial="hidden" animate="visible" className="mb-12 bg-gray-900/50 rounded-2xl overflow-hidden border border-gray-800 hover:border-primary-500/50 transition-transform duration-300 transform hover:-translate-y-1">
-                <Link to={`/blog/${featuredPost.id}`}>
+                <Link to={`/blog/${featuredPost.id}`} className="block">
                   <div className="aspect-w-16 aspect-h-9">
                     <img src={featuredPost.imageUrl} alt="Featured post" className="object-cover w-full h-full" />
                   </div>
@@ -235,7 +194,6 @@ const Blog = () => {
                 </div>
               </motion.div>
             )}
-
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {currentPosts.filter((post) => !post.featured).map((post: BlogPost) => (
                 <Link to={`/blog/${post.id}/${slugify(post.title)}`} key={post.id} className="block">
@@ -259,20 +217,20 @@ const Blog = () => {
                 </Link>
               ))}
             </motion.div>
-
             {filteredPosts.length === 0 && (
               <div className="text-center text-gray-400 mt-12">
                 <p className="text-lg">Nenhum resultado encontrado.</p>
               </div>
             )}
-
             {filteredPosts.length > postsPerPage && (
               <div className="mt-10 flex justify-center items-center gap-2">
                 {Array.from({ length: Math.ceil(filteredPosts.length / postsPerPage) }).map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => paginate(index + 1)}
-                    className={`px-4 py-2 rounded-md font-medium transition-colors ${currentPage === index + 1 ? 'bg-primary-500 text-white' : 'bg-gray-900/50 text-gray-400 hover:bg-gray-800'}`}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                      currentPage === index + 1 ? 'bg-primary-500 text-white' : 'bg-gray-900/50 text-gray-400 hover:bg-gray-800'
+                    }`}
                   >
                     {index + 1}
                   </button>
@@ -280,7 +238,6 @@ const Blog = () => {
               </div>
             )}
           </div>
-
           <div className="hidden lg:block space-y-8">
             <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800">
               <h4 className="text-xl font-semibold mb-4 text-primary-500">Posts Recentes</h4>
@@ -298,14 +255,7 @@ const Blog = () => {
               <h4 className="text-xl font-semibold mb-4 text-primary-500">Categorias</h4>
               <ul className="text-gray-300 text-sm leading-6 space-y-2">
                 {categories.slice(1).map((cat) => (
-                  <li
-                    key={cat}
-                    onClick={() => {
-                      setSelectedCategory(cat)
-                      setCurrentPage(1)
-                    }}
-                    className="cursor-pointer hover:text-primary-500 transition-colors"
-                  >
+                  <li key={cat} onClick={() => { setSelectedCategory(cat); setCurrentPage(1) }} className="cursor-pointer hover:text-primary-500 transition-colors">
                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                   </li>
                 ))}
@@ -313,25 +263,10 @@ const Blog = () => {
             </div>
           </div>
         </div>
-
-        <motion.div
-          initial={{ scale: 1, opacity: 1 }}
-          animate={{
-            scale: isSubmitted ? [1, 1.02, 1] : 1,
-            opacity: 1,
-            transition: { duration: 0.8, ease: "easeInOut" }
-          }}
-          className="mt-20 mb-12 bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center max-w-4xl mx-auto transform hover:scale-[1.01] transition-all duration-300 hover:border-primary-500/50 overflow-hidden"
-        >
+        <motion.div initial={{ scale: 1, opacity: 1 }} animate={{ scale: isSubmitted ? [1, 1.02, 1] : 1, opacity: 1 }} transition={{ duration: 0.8, ease: "easeInOut" }} className="mt-20 mb-12 bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center max-w-4xl mx-auto transform hover:scale-[1.01] transition-all duration-300 hover:border-primary-500/50 overflow-hidden">
           <AnimatePresence mode="wait">
             {!isSubmitted ? (
-              <motion.div
-                key="subscribe"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
-                transition={{ duration: 0.5 }}
-              >
+              <motion.div key="subscribe" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }} transition={{ duration: 0.5 }}>
                 <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 text-transparent bg-clip-text">Assine nossa Newsletter</h2>
                 <p className="text-gray-300 text-lg mb-6 max-w-2xl mx-auto">
                   Receba artigos exclusivos, dicas avançadas e estratégias comprovadas diretamente em seu e-mail.
@@ -352,18 +287,9 @@ const Blog = () => {
               </motion.div>
             ) : (
               <motion.div key="success" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: [0, 1], scale: [0.8, 1], y: [20, 0] }}
-                  transition={{ duration: 0.8, ease: "easeOut", times: [0, 1] }}
-                  className="flex flex-col items-center justify-center w-full"
-                >
+                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: [0, 1], scale: [0.8, 1], y: [20, 0] }} transition={{ duration: 0.8, ease: "easeOut", times: [0, 1] }} className="flex flex-col items-center justify-center w-full">
                   <div className="relative mb-6">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"
-                      animate={{ x: ['-100%', '200%'], opacity: [0, 1, 1, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut', times: [0, 0.3, 0.7, 1] }}
-                    />
+                    <motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" animate={{ x: ['-100%', '200%'], opacity: [0, 1, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut', times: [0, 0.3, 0.7, 1] }} />
                     <div className="text-3xl font-bold text-primary-500">Sucesso!</div>
                   </div>
                   <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 text-transparent bg-clip-text">

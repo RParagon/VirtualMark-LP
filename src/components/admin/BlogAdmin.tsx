@@ -1,4 +1,3 @@
-// BlogAdmin.tsx
 import { useState } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { usePosts } from '../../contexts/PostContext'
@@ -68,14 +67,21 @@ const BlogAdmin = () => {
     }
     const postToSave = { ...post, imageUrl }
     try {
+      let success = false
       if (post.id) {
         await updatePost(postToSave)
+        success = true
       } else {
         const { id, ...postWithoutId } = postToSave
         await addPost(postWithoutId)
+        success = true
       }
-      setSelectedPost(null)
-      setIsEditing(false)
+      if (success) {
+        setSelectedPost(null)
+        setIsEditing(false)
+      } else {
+        alert('Failed to save the post. Please try again.')
+      }
     } catch (error) {
       console.error('Error saving post:', error)
       alert('An error occurred while saving the post. Please try again.')
@@ -88,7 +94,10 @@ const BlogAdmin = () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       setIsLoading(true)
       try {
-        await deletePost(postId)
+        const success = await deletePost(postId)
+        if (!success) {
+          alert('Failed to delete the post. Please try again.')
+        }
       } catch (error) {
         console.error('Error deleting post:', error)
         alert('An error occurred while deleting the post. Please try again.')
@@ -120,10 +129,13 @@ const BlogAdmin = () => {
             <h2 className="text-xl font-semibold mb-6">
               {selectedPost?.id ? 'Editar Post' : 'Novo Post'}
             </h2>
-            <form className="space-y-6" onSubmit={(e) => {
-              e.preventDefault()
-              selectedPost && handleSavePost(selectedPost)
-            }}>
+            <form
+              className="space-y-6"
+              onSubmit={(e) => {
+                e.preventDefault()
+                selectedPost && handleSavePost(selectedPost)
+              }}
+            >
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Título</label>
                 <input
@@ -134,6 +146,7 @@ const BlogAdmin = () => {
                   disabled={isLoading}
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Resumo</label>
                 <textarea
@@ -143,6 +156,7 @@ const BlogAdmin = () => {
                   disabled={isLoading}
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Conteúdo</label>
                 <Editor
@@ -166,6 +180,7 @@ const BlogAdmin = () => {
                   }}
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Categoria</label>
@@ -193,6 +208,7 @@ const BlogAdmin = () => {
                   />
                 </div>
               </div>
+
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Data</label>
@@ -215,6 +231,7 @@ const BlogAdmin = () => {
                   />
                 </div>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">URL da Imagem</label>
                 <input
@@ -225,6 +242,7 @@ const BlogAdmin = () => {
                   disabled={isLoading}
                 />
               </div>
+
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -235,6 +253,7 @@ const BlogAdmin = () => {
                 />
                 <label className="text-sm font-medium text-gray-400">Destacar post</label>
               </div>
+
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
@@ -284,7 +303,9 @@ const BlogAdmin = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{post.author}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{new Date(post.date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      {new Date(post.date).toLocaleDateString()}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => {
@@ -296,7 +317,10 @@ const BlogAdmin = () => {
                       >
                         <PencilIcon className="w-5 h-5" />
                       </button>
-                      <button onClick={() => handleDeletePost(post.id)} className="text-red-500 hover:text-red-400">
+                      <button
+                        onClick={() => handleDeletePost(post.id)}
+                        className="text-red-500 hover:text-red-400"
+                      >
                         <TrashIcon className="w-5 h-5" />
                       </button>
                     </td>

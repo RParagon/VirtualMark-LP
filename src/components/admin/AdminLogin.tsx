@@ -1,4 +1,3 @@
-// AdminLogin.tsx
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
@@ -21,7 +20,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       }
     }
     checkSession()
-  }, [])
+  }, [onLogin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,13 +29,11 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         email,
         password
       })
-
       if (error) {
         setError(error.message)
         onLogin(false)
         return
       }
-
       if (data.session) {
         setError('')
         onLogin(true)
@@ -97,12 +94,17 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-700 rounded bg-gray-800/50"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">Remember me</label>
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+                Remember me
+              </label>
             </div>
           </div>
           {error && <div className="text-red-500 text-sm text-center">{error}</div>}
           <div>
-            <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+            >
               Sign in
             </button>
           </div>

@@ -1,5 +1,4 @@
-// Qualification.tsx
-import { motion, Variants } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
@@ -10,6 +9,7 @@ const Qualification = () => {
     threshold: 0.1
   })
 
+  // Itens do checklist
   const checklistItems = [
     'Aumentar o retorno dos seus investimentos em anúncios pagos',
     'Atrair leads qualificados e aumentar conversões',
@@ -39,17 +39,25 @@ const Qualification = () => {
     window.open(whatsappURL, '_blank')
   }
 
-  const containerVariants: Variants = {
+  // Variantes de animação
+  const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2 }
+    }
   }
 
-  const itemVariants: Variants = {
+  const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.6 } }
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6 }
+    }
   }
 
-  const chartPathVariants: Variants = {
+  const chartPathVariants = {
     hidden: { pathLength: 0 },
     visible: {
       pathLength: 1,
@@ -86,7 +94,6 @@ const Qualification = () => {
         animate={inView ? 'visible' : 'hidden'}
         className="relative max-w-7xl mx-auto z-10"
       >
-        {/* Título */}
         <motion.div variants={itemVariants} className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-white">
             Está na dúvida se a
@@ -100,12 +107,10 @@ const Qualification = () => {
           </p>
         </motion.div>
 
-        {/* Grid principal */}
         <motion.div
           variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16"
         >
-          {/* Checklist */}
           <div className="space-y-6">
             {checklistItems.map((item, index) => {
               const isSelected = selectedItems.includes(item)
@@ -113,9 +118,9 @@ const Qualification = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className={`flex items-center space-x-4 bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border 
-                    ${isSelected ? 'border-primary-500/50' : 'border-gray-800 hover:border-primary-500/50'}
-                    transition-all duration-300 cursor-pointer`}
+                  className={`flex items-center space-x-4 bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border ${
+                    isSelected ? 'border-primary-500/50' : 'border-gray-800 hover:border-primary-500/50'
+                  } transition-all duration-300 cursor-pointer`}
                   onClick={() => handleToggle(item)}
                 >
                   <CheckCircleIcon
@@ -127,7 +132,6 @@ const Qualification = () => {
             })}
           </div>
 
-          {/* Notebook + Gráfico + Métricas */}
           <motion.div variants={itemVariants} className="relative hidden md:block">
             <motion.div
               className="relative w-full max-w-md mx-auto aspect-[16/10] bg-gray-800 rounded-md overflow-hidden border border-gray-700 shadow-lg"
@@ -177,16 +181,15 @@ const Qualification = () => {
 
         <motion.div variants={itemVariants} className="text-center">
           <button
-            className={`px-8 py-3 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20
-              ${hasMinimumSelected ? 'bg-primary-600 hover:bg-primary-700 cursor-pointer' : 'bg-gray-700 cursor-not-allowed'}`}
+            className={`px-8 py-3 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20 ${
+              hasMinimumSelected ? 'bg-primary-600 hover:bg-primary-700 cursor-pointer' : 'bg-gray-700 cursor-not-allowed'
+            }`}
             onClick={handleWhatsAppRedirect}
           >
             Fale Conosco
           </button>
           {!hasMinimumSelected && (
-            <p className="text-sm text-gray-500 mt-2">
-              Selecione pelo menos 3 opções para continuar.
-            </p>
+            <p className="text-sm text-gray-500 mt-2">Selecione pelo menos 3 opções para continuar.</p>
           )}
         </motion.div>
       </motion.div>
