@@ -1,3 +1,4 @@
+// AdminLogin.tsx
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
@@ -27,10 +28,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          persistSession: rememberMe
-        }
+        password
       })
 
       if (error) {
@@ -58,16 +56,12 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         className="max-w-md w-full space-y-8 bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-gray-800"
       >
         <div>
-          <h2 className="text-center text-3xl font-bold text-white">
-            Admin Login
-          </h2>
+          <h2 className="text-center text-3xl font-bold text-white">Admin Login</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
+              <label htmlFor="email" className="sr-only">Email</label>
               <input
                 id="email"
                 name="email"
@@ -80,9 +74,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
+              <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
                 name="password"
@@ -105,20 +97,12 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-700 rounded bg-gray-800/50"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                Remember me
-              </label>
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">Remember me</label>
             </div>
           </div>
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
-
+          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
-            >
+            <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
               Sign in
             </button>
           </div>
