@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useCases } from '../../contexts/CaseContext'
 import { Editor } from '@tinymce/tinymce-react'
 import { supabase } from '../../lib/supabase'
@@ -40,17 +40,18 @@ const CaseAdmin = () => {
   })
 
   useEffect(() => {
-    setLocalCases(cases)
+    const filteredCases = cases.filter(c => c.status === 'published' || c.status === 'draft')
+    setLocalCases(filteredCases)
     setDashboardStats({
-      total: cases.length,
-      published: cases.filter(c => c.status === 'published').length,
-      draft: cases.filter(c => c.status === 'draft').length,
-      featured: cases.filter(c => c.featured).length
+      total: filteredCases.length,
+      published: filteredCases.filter(c => c.status === 'published').length,
+      draft: filteredCases.filter(c => c.status === 'draft').length,
+      featured: filteredCases.filter(c => c.featured).length
     })
   }, [cases])
 
-  const industries = ['technology', 'healthcare', 'finance', 'retail', 'education', 'other']
-  const clientSizes = ['small', 'medium', 'large', 'enterprise']
+  const industries = ['tecnologia', 'saúde', 'finanças', 'varejo', 'educação', 'outros']
+  const clientSizes = ['pequena', 'média', 'grande', 'corporação']
 
   const handleCreateCase = () => {
     const newCase: CaseData = {
@@ -183,9 +184,59 @@ const CaseAdmin = () => {
     }
   }
 
+  const handleToggleStatus = async (caseData: CaseData) => {
+    setIsLoading(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Authentication required. Please log in again.')
+      }
+
+      const newStatus = caseData.status === 'draft' ? 'published' : 'draft'
+      const { error } = await supabase
+        .from('cases')
+        .update({ status: newStatus })
+        .eq('id', caseData.id)
+
+      if (error) {
+        if (error.code === '403') {
+          throw new Error('You do not have permission to update this case.')
+        }
+        throw error
+      }
+
+      await refreshCases()
+    } catch (error) {
+      console.error('Error updating case status:', error)
+      alert(error instanceof Error ? error.message : 'An error occurred while updating the case status. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-custom py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Total Cases</h3>
+            <p className="text-2xl font-bold">{dashboardStats.total}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Published</h3>
+            <p className="text-2xl font-bold text-green-500">{dashboardStats.published}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Drafts</h3>
+            <p className="text-2xl font-bold text-yellow-500">{dashboardStats.draft}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Featured</h3>
+            <p className="text-2xl font-bold text-primary-500">{dashboardStats.featured}</p>
+          </div>
+        </div>
+
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
             Gerenciar
@@ -201,356 +252,375 @@ const CaseAdmin = () => {
           </button>
         </div>
 
-        {!isEditing && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-              <h3 className="text-lg font-medium mb-2">Total Cases</h3>
-              <p className="text-3xl font-bold text-primary-500">{dashboardStats.total}</p>
-            </div>
-            <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-              <h3 className="text-lg font-medium mb-2">Published</h3>
-              <p className="text-3xl font-bold text-green-500">{dashboardStats.published}</p>
-            </div>
-            <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-              <h3 className="text-lg font-medium mb-2">Drafts</h3>
-              <p className="text-3xl font-bold text-yellow-500">{dashboardStats.draft}</p>
-            </div>
-            <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-              <h3 className="text-lg font-medium mb-2">Featured</h3>
-              <p className="text-3xl font-bold text-purple-500">{dashboardStats.featured}</p>
-            </div>
-          </div>
-        )}
-
-        {isEditing ? (
-          <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-            <h2 className="text-xl font-semibold mb-6">
-              {selectedCase?.id ? 'Editar Case' : 'Novo Case'}
-            </h2>
-            <form className="space-y-6" onSubmit={(e) => {
-              e.preventDefault()
-              selectedCase && handleSaveCase(selectedCase)
-            }}>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Título
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedCase?.title}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, title: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Slug
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedCase?.slug}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, slug: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Descrição
-                </label>
-                <textarea
-                  value={selectedCase?.description}
-                  onChange={(e) => setSelectedCase(prev => ({ ...prev!, description: e.target.value }))}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white h-24"
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Desafio
-                </label>
-                <Editor
-                  apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
-                  value={selectedCase?.challenge}
-                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, challenge: content }))}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                    ],
-                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                  }}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Solução
-                </label>
-                <Editor
-                  apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
-                  value={selectedCase?.solution}
-                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, solution: content }))}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                    ],
-                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                  }}
-                  disabled={isLoading}
-                />
-
-                <Editor
-                  apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
-                  value={selectedCase?.results}
-                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, results: content }))}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                    ],
-                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                  }}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Resultados
-                </label>
-                <Editor
-                  apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
-                  value={selectedCase?.results}
-                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, results: content }))}
-                  init={{
-                    height: 300,
-                    menubar: true,
-                    plugins: [
-                      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                    ],
-                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                  }}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Nome do Cliente
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedCase?.client_name}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, client_name: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Indústria
-                  </label>
-                  <select
-                    value={selectedCase?.client_industry}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, client_industry: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
+        {/* Case Form Modal */}
+        {isEditing && selectedCase && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900/80 backdrop-blur-sm">
+            <div className="flex items-center justify-center min-h-screen py-8 px-4 sm:p-6">
+              <div className="relative w-full max-w-5xl bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+                  <h3 className="text-2xl font-bold text-white">
+                    {selectedCase.id ? 'Edit Case' : 'New Case'}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setSelectedCase(null)
+                      setIsEditing(false)
+                    }}
+                    className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                   >
-                    {industries.map(industry => (
-                      <option key={industry} value={industry}>
-                        {industry.charAt(0).toUpperCase() + industry.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Tamanho do Cliente
-                  </label>
-                  <select
-                    value={selectedCase?.client_size}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, client_size: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
-                  >
-                    {clientSizes.map(size => (
-                      <option key={size} value={size}>
-                        {size.charAt(0).toUpperCase() + size.slice(1)}
-                      </option>
-                    ))}
-                  </select>
+                    <XMarkIcon className="w-6 h-6 text-gray-400" />
+                  </button>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Duração
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedCase?.duration}
-                    onChange={(e) => setSelectedCase(prev => ({ ...prev!, duration: e.target.value }))}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
+                {/* Form Content */}
+                <div className="p-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                  <form onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSaveCase(selectedCase)
+                  }}>
+                    {/* Form Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Basic Information */}
+                      <div className="space-y-6">
+                        <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
+                          <h4 className="text-lg font-semibold text-white mb-4">Basic Information</h4>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                            <input
+                              type="text"
+                              value={selectedCase.title}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, title: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              required
+                            />
+                          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  URL da Imagem
-                </label>
-                <input
-                  type="text"
-                  value={selectedCase?.image_url}
-                  onChange={(e) => setSelectedCase(prev => ({ ...prev!, image_url: e.target.value }))}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                  disabled={isLoading}
-                />
-              </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Slug</label>
+                            <input
+                              type="text"
+                              value={selectedCase.slug}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, slug: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              required
+                            />
+                          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Métricas Principais
-                </label>
-                <div className="space-y-4">
-                  {selectedCase?.metrics.map((metric, index) => (
-                    <div key={index} className="flex items-center gap-4">
-                      <input
-                        type="text"
-                        value={metric.value}
-                        onChange={(e) => {
-                          const newMetrics = [...selectedCase.metrics]
-                          newMetrics[index] = { ...metric, value: e.target.value }
-                          setSelectedCase(prev => ({ ...prev!, metrics: newMetrics }))
-                        }}
-                        placeholder="Valor"
-                        className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                        disabled={isLoading}
-                      />
-                      <input
-                        type="text"
-                        value={metric.label}
-                        onChange={(e) => {
-                          const newMetrics = [...selectedCase.metrics]
-                          newMetrics[index] = { ...metric, label: e.target.value }
-                          setSelectedCase(prev => ({ ...prev!, metrics: newMetrics }))
-                        }}
-                        placeholder="Descrição"
-                        className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                        disabled={isLoading}
-                      />
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                            <textarea
+                              value={selectedCase.description}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, description: e.target.value })}
+                              rows={3}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                            <input
+                              type="text"
+                              value={selectedCase.image_url}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, image_url: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Client Information */}
+                      <div className="space-y-6">
+                        <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
+                          <h4 className="text-lg font-semibold text-white mb-4">Client Information</h4>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Client Name</label>
+                            <input
+                              type="text"
+                              value={selectedCase.client_name}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, client_name: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Client Industry</label>
+                            <select
+                              value={selectedCase.client_industry}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, client_industry: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                            >
+                              {industries.map((industry) => (
+                                <option key={industry} value={industry}>{industry}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Client Size</label>
+                            <select
+                              value={selectedCase.client_size}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, client_size: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                            >
+                              {clientSizes.map((size) => (
+                                <option key={size} value={size}>{size}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Duration</label>
+                            <input
+                              type="text"
+                              value={selectedCase.duration}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, duration: e.target.value })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        {/* Status and Featured */}
+                        <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
+                          <h4 className="text-lg font-semibold text-white mb-4">Publishing Options</h4>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                            <select
+                              value={selectedCase.status}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, status: e.target.value as 'draft' | 'published' })}
+                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                            >
+                              <option value="draft">Draft</option>
+                              <option value="published">Published</option>
+                            </select>
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedCase.featured}
+                              onChange={(e) => setSelectedCase({ ...selectedCase, featured: e.target.checked })}
+                              className="w-5 h-5 text-primary-600 border-gray-700 rounded bg-gray-900/50 focus:ring-primary-500"
+                              id="featured"
+                            />
+                            <label htmlFor="featured" className="text-sm text-gray-300 select-none cursor-pointer">Featured Case</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Metrics */}
+                      <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
+                        <h4 className="text-lg font-semibold text-white mb-4">Metrics</h4>
+                        
+                        <div className="space-y-4">
+                          {selectedCase.metrics.map((metric, index) => (
+                            <div key={index} className="flex gap-4">
+                              <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Value</label>
+                                <input
+                                  type="text"
+                                  value={metric.value}
+                                  onChange={(e) => {
+                                    const newMetrics = [...selectedCase.metrics]
+                                    newMetrics[index] = { ...metric, value: e.target.value }
+                                    setSelectedCase({ ...selectedCase, metrics: newMetrics })
+                                  }}
+                                  className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Label</label>
+                                <input
+                                  type="text"
+                                  value={metric.label}
+                                  onChange={(e) => {
+                                    const newMetrics = [...selectedCase.metrics]
+                                    newMetrics[index] = { ...metric, label: e.target.value }
+                                    setSelectedCase({ ...selectedCase, metrics: newMetrics })
+                                  }}
+                                  className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newMetrics = selectedCase.metrics.filter((_, i) => i !== index)
+                                  setSelectedCase({ ...selectedCase, metrics: newMetrics })
+                                }}
+                                className="self-end px-3 py-2.5 text-gray-400 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
+                              >
+                                <TrashIcon className="w-5 h-5" />
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedCase({
+                                ...selectedCase,
+                                metrics: [...selectedCase.metrics, { value: '', label: '' }]
+                              })
+                            }}
+                            className="w-full px-4 py-2.5 border border-dashed border-gray-700 rounded-lg text-gray-400 hover:text-white hover:border-primary-500 transition-colors"
+                          >
+                            Add Metric
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rich Text Editors */}
+                    <div className="mt-8 space-y-6">
+                      <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                        <h4 className="text-lg font-semibold text-white mb-6">Case Details</h4>
+                        
+                        <div className="space-y-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Challenge</label>
+                            <Editor
+                              value={selectedCase.challenge}
+                              onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, challenge: content })}
+                              init={{
+                                height: 200,
+                                menubar: false,
+                                plugins: ['advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'],
+                                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                skin: 'oxide-dark',
+                                content_css: 'dark'
+                              }}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Solution</label>
+                            <Editor
+                              value={selectedCase.solution}
+                              onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, solution: content })}
+                              init={{
+                                height: 200,
+                                menubar: false,
+                                plugins: ['advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'],
+                                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                skin: 'oxide-dark',
+                                content_css: 'dark'
+                              }}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Results</label>
+                            <Editor
+                              value={selectedCase.results}
+                              onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, results: content })}
+                              init={{
+                                height: 200,
+                                menubar: false,
+                                plugins: ['advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'],
+                                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                skin: 'oxide-dark',
+                                content_css: 'dark'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Actions */}
+                    <div className="mt-8 flex items-center justify-end space-x-4 sticky bottom-0 bg-gray-900 py-4 border-t border-gray-800">
                       <button
                         type="button"
                         onClick={() => {
-                          const newMetrics = selectedCase.metrics.filter((_, i) => i !== index)
-                          setSelectedCase(prev => ({ ...prev!, metrics: newMetrics }))
+                          setSelectedCase(null)
+                          setIsEditing(false)
                         }}
-                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                        className="px-6 py-2.5 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-600"
                         disabled={isLoading}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className={`px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {isLoading ? 'Saving...' : 'Save Case'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cases List */}
+        <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-800">
+              <thead className="bg-gray-900/50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Client</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Featured</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {localCases.map((caseItem) => (
+                  <tr key={caseItem.id} className="hover:bg-gray-800/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-white">{caseItem.title}</div>
+                      <div className="text-sm text-gray-400">{caseItem.slug}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-white">{caseItem.client_name}</div>
+                      <div className="text-sm text-gray-400">{caseItem.client_industry}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleToggleStatus(caseItem)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${caseItem.status === 'published' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'}`}
+                      >
+                        {caseItem.status === 'published' ? 'Published' : 'Draft'}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${caseItem.featured ? 'bg-primary-500/10 text-primary-500' : 'bg-gray-700/50 text-gray-400'}`}>
+                        {caseItem.featured ? 'Featured' : 'Not Featured'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => {
+                          setSelectedCase(caseItem)
+                          setIsEditing(true)
+                        }}
+                        className="text-primary-500 hover:text-primary-400 mr-4"
+                      >
+                        <PencilIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCase(caseItem.id)}
+                        className="text-red-500 hover:text-red-400"
                       >
                         <TrashIcon className="w-5 h-5" />
                       </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newMetrics = [...selectedCase!.metrics, { value: '', label: '' }]
-                      setSelectedCase(prev => ({ ...prev!, metrics: newMetrics }))
-                    }}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-400
-                             hover:bg-gray-700 hover:text-white transition-colors flex items-center justify-center gap-2"
-                    disabled={isLoading}
-                  >
-                    <PlusIcon className="w-5 h-5" />
-                    Adicionar Métrica
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Salvando...' : 'Salvar'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedCase(null)
-                    setIsEditing(false)
-                  }}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {localCases.map(caseItem => (
-              <div
-                key={caseItem.id}
-                className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800 flex justify-between items-center"
-              >
-                <div>
-                  <h3 className="text-lg font-medium">{caseItem.title}</h3>
-                  <p className="text-gray-400">{caseItem.description}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setSelectedCase(caseItem)
-                      setIsEditing(true)
-                    }}
-                    className="p-2 text-gray-400 hover:text-white transition-colors"
-                  >
-                    <PencilIcon className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCase(caseItem.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <TrashIcon className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )

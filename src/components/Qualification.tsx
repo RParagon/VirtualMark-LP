@@ -2,6 +2,7 @@ import { motion, Variants } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
+import { useContact } from '../contexts/ContactContext'
 
 const Qualification = () => {
   const [ref, inView] = useInView({
@@ -31,13 +32,14 @@ const Qualification = () => {
 
   // Lógica de WhatsApp
   const hasMinimumSelected = selectedItems.length >= 3
+  const { contactInfo } = useContact()
+
   const handleWhatsAppRedirect = () => {
     if (!hasMinimumSelected) return
     const baseMessage = `Olá, tenho interesse em falar com a VirtualMark.\nMarquei as seguintes necessidades:`
     const listItems = selectedItems.map((item) => `\n- ${item}`).join('')
     const finalMessage = `${baseMessage}${listItems}`
-    const phoneNumber = '5521999999999'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(finalMessage)}`
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(finalMessage)}`
     window.open(whatsappURL, '_blank')
   }
 

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useContact } from '../contexts/ContactContext'
 import { ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
 
 const Assessment = () => {
@@ -8,10 +9,11 @@ const Assessment = () => {
     threshold: 0.1
   })
 
+  const { contactInfo } = useContact()
+
   const handleAssessmentRequest = () => {
-    const phoneNumber = '5521999999999' // Replace with actual phone number
     const message = 'Olá! Gostaria de solicitar uma avaliação gratuita para o meu negócio.'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(message)}`
     window.open(whatsappURL, '_blank')
   }
 

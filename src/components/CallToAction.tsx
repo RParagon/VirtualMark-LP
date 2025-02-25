@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
+import { useContact } from '../contexts/ContactContext'
 import { useInView } from 'react-intersection-observer'
+import { Link } from 'react-router-dom'
 
 const CallToAction = () => {
   const [ref, inView] = useInView({
@@ -7,18 +9,12 @@ const CallToAction = () => {
     threshold: 0.1
   })
 
-  const handleConsultationRequest = () => {
-    const phoneNumber = '5521999999999' // Replace with actual phone number
-    const message = 'Olá! Gostaria de agendar uma consulta gratuita com a VirtualMark.'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
-    window.open(whatsappURL, '_blank')
-  }
+  const { contactInfo } = useContact()
 
-  const handleViewCases = () => {
-    const casesSection = document.querySelector('#results')
-    if (casesSection) {
-      casesSection.scrollIntoView({ behavior: 'smooth' })
-    }
+  const handleConsultationRequest = () => {
+    const message = 'Olá! Gostaria de agendar uma consulta gratuita com a VirtualMark.'
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(message)}`
+    window.open(whatsappURL, '_blank')
   }
 
   const containerVariants = {
@@ -68,12 +64,12 @@ const CallToAction = () => {
             >
               Agendar Consulta Gratuita
             </button>
-            <button
-              onClick={handleViewCases}
+            <Link
+              to="/cases"
               className="button-secondary"
             >
               Ver Mais Cases
-            </button>
+            </Link>
           </div>
         </motion.div>
       </motion.div>

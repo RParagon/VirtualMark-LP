@@ -72,11 +72,14 @@ const Footer = () => {
         {/* VM Section */}
         <motion.div variants={itemVariants} className="text-center mb-12">
           <Link to="/" className="inline-block mb-4">
-            <h3 className="text-3xl font-bold tracking-wide">
-              <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-transparent bg-clip-text">
-                VM
-              </span>
-            </h3>
+            <div className="flex items-center justify-center gap-2">
+              <img src="/vm-logo.svg" alt="VirtualMark Logo" className="h-8" />
+              <h3 className="text-3xl font-bold tracking-wide">
+                <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-transparent bg-clip-text">
+                  VirtualMark
+                </span>
+              </h3>
+            </div>
           </Link>
           <p className="text-gray-400 max-w-lg mx-auto">
             Transformando negócios através do marketing digital
@@ -148,9 +151,9 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <h4 className="text-lg font-semibold mb-4 text-white">Contato</h4>
             <ul className="space-y-2">
-              <li className="text-gray-400">(21) 99999-9999</li>
+              <li className="text-gray-400">(11) 91334-5769</li>
               <li className="text-gray-400">contato@virtualmark.com.br</li>
-              <li className="text-gray-400">Rio de Janeiro, RJ</li>
+              <li className="text-gray-400">São Paulo, SP</li>
             </ul>
           </motion.div>
         </motion.div>

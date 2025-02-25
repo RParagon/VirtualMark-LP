@@ -3,6 +3,10 @@ import { motion, useScroll, useSpring } from 'framer-motion'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { PostProvider } from './contexts/PostContext'
 import { CaseProvider } from './contexts/CaseContext'
+import { ContactProvider } from './contexts/ContactContext'
+import { ServiceProvider } from './contexts/ServiceContext'
+import { AuthProvider } from './contexts/AuthContext'
+import ScrollToTop from './components/ScrollToTop'
 
 // Components will be imported here as they are created
 import Navbar from './components/Navbar'
@@ -44,9 +48,12 @@ function App() {
   }, [])
 
   return (
-    <PostProvider>
-      <Router>
-      <div className="relative min-h-screen">
+    <AuthProvider>
+      <PostProvider>
+        <ContactProvider>
+          <Router>
+            <ScrollToTop />
+          <div className="relative min-h-screen">
         {/* Progress bar */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-1 bg-primary-600 origin-left z-50"
@@ -60,10 +67,10 @@ function App() {
           <Route path="/cases" element={<CaseProvider><CasesPage /></CaseProvider>} />
           <Route path="/cases/:slug" element={<CaseProvider><CaseDetailPage /></CaseProvider>} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/services/traffic-management" element={<TrafficManagement />} />
-          <Route path="/services/performance-marketing" element={<PerformanceMarketing />} />
-          <Route path="/services/content-marketing" element={<ContentMarketing />} />
-          <Route path="/services/digital-consulting" element={<DigitalConsulting />} />
+          <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
+          <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
+          <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
+          <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
           <Route path="/" element={
             <main className="relative">
               <Navbar />
@@ -81,7 +88,9 @@ function App() {
         </Routes>
       </div>
     </Router>
-    </PostProvider>
+        </ContactProvider>
+      </PostProvider>
+    </AuthProvider>
   )
 }
 

@@ -5,6 +5,7 @@ import type { Post, NewPost, UpdatePost } from '../types/supabase'
 type BlogPost = Omit<Post, 'created_at' | 'read_time' | 'image_url'> & {
   readTime: string
   imageUrl: string
+  status: 'draft' | 'published'
 }
 
 interface PostContextType {
@@ -41,7 +42,8 @@ export function PostProvider({ children }: { children: ReactNode }) {
         date: post.date,
         readTime: post.read_time,
         imageUrl: post.image_url,
-        featured: post.featured
+        featured: post.featured,
+        status: post.status || 'draft'
       }))
       setPosts(formattedPosts)
     }
@@ -66,7 +68,8 @@ export function PostProvider({ children }: { children: ReactNode }) {
             date: newPost.date,
             readTime: newPost.read_time,
             imageUrl: newPost.image_url,
-            featured: newPost.featured
+            featured: newPost.featured,
+            status: newPost.status || 'draft'
           }, ...currentPosts])
         }
       )
@@ -87,7 +90,8 @@ export function PostProvider({ children }: { children: ReactNode }) {
                     date: updatedPost.date,
                     readTime: updatedPost.read_time,
                     imageUrl: updatedPost.image_url,
-                    featured: updatedPost.featured
+                    featured: updatedPost.featured,
+                    status: updatedPost.status || 'draft'
                   }
                 : post
             )
@@ -126,14 +130,31 @@ export function PostProvider({ children }: { children: ReactNode }) {
       date: post.date,
       read_time: post.readTime,
       image_url: post.imageUrl,
-      featured: post.featured
+      featured: post.featured,
+      status: post.status
     }
 
-    const { error } = await supabase.from('posts').insert(newPost)
+    const { data, error } = await supabase.from('posts').insert(newPost).select().single()
 
     if (error) {
       console.error('Error adding post:', error)
       return false
+    }
+
+    if (data) {
+      setPosts(currentPosts => [{
+        id: data.id,
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        category: data.category,
+        author: data.author,
+        date: data.date,
+        readTime: data.read_time,
+        imageUrl: data.image_url,
+        featured: data.featured,
+        status: data.status || 'draft'
+      }, ...currentPosts])
     }
 
     return true
@@ -149,17 +170,42 @@ export function PostProvider({ children }: { children: ReactNode }) {
       date: post.date,
       read_time: post.readTime,
       image_url: post.imageUrl,
-      featured: post.featured
+      featured: post.featured,
+      status: post.status
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('posts')
       .update(updatedPost)
       .eq('id', post.id)
+      .select()
+      .single()
 
     if (error) {
       console.error('Error updating post:', error)
       return false
+    }
+
+    if (data) {
+      setPosts(currentPosts =>
+        currentPosts.map(p =>
+          p.id === post.id
+            ? {
+                id: data.id,
+                title: data.title,
+                excerpt: data.excerpt,
+                content: data.content,
+                category: data.category,
+                author: data.author,
+                date: data.date,
+                readTime: data.read_time,
+                imageUrl: data.image_url,
+                featured: data.featured,
+                status: data.status || 'draft'
+              }
+            : p
+        )
+      )
     }
 
     return true
@@ -176,6 +222,7 @@ export function PostProvider({ children }: { children: ReactNode }) {
       return false
     }
 
+    setPosts(currentPosts => currentPosts.filter(post => post.id !== id))
     return true
   }
 

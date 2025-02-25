@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import { useContact } from '../contexts/ContactContext'
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -21,6 +22,7 @@ const ContactPage = () => {
     message: ''
   })
 
+  const { contactInfo } = useContact()
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -337,7 +339,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold mb-1">Endereço</h4>
-                      <p className="text-gray-400">Av. Rio Branco, 156 - Centro<br />Rio de Janeiro, RJ - 20040-003</p>
+                      <p className="text-gray-400">{contactInfo.address.street} - {contactInfo.address.neighborhood}<br />{contactInfo.address.city}, {contactInfo.address.state} - {contactInfo.address.zipCode}</p>
                     </div>
                   </motion.div>
 
@@ -350,7 +352,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold mb-1">Telefone</h4>
-                      <p className="text-gray-400">(21) 99999-9999</p>
+                      <p className="text-gray-400">{contactInfo.phoneNumber}</p>
                     </div>
                   </motion.div>
 
@@ -363,7 +365,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold mb-1">Email</h4>
-                      <p className="text-gray-400">contato@virtualmark.com.br</p>
+                      <p className="text-gray-400">{contactInfo.email}</p>
                     </div>
                   </motion.div>
                 </div>
@@ -411,7 +413,7 @@ const ContactPage = () => {
                 <h3 className="text-2xl font-bold mb-6">Localização</h3>
                 <div className="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.2961758510147!2d-43.181435684906396!3d-22.907004043621374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997f5fd24e0bdd%3A0x99447fc2607f1a!2sAv.%20Rio%20Branco%2C%20156%20-%20Centro%2C%20Rio%20de%20Janeiro%20-%20RJ%2C%2020040-003!5e0!3m2!1sen!2sbr!4v1645488532648!5m2!1sen!2sbr"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.0998847991837!2d-46.65390492506619!3d-23.563224361669753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%20-%20Bela%20Vista%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2001310-100!5e0!3m2!1sen!2sbr!4v1645488532648!5m2!1sen!2sbr"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

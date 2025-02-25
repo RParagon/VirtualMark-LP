@@ -120,7 +120,7 @@ const Services = () => {
   ]
 
   return (
-    <section ref={containerRef} className="relative py-32 px-4 sm:px-6 lg:px-8 bg-gradient-custom overflow-hidden">
+    <section id="service" ref={containerRef} className="relative py-32 px-4 sm:px-6 lg:px-8 bg-gradient-custom overflow-hidden">
       <motion.div
         style={{ y, opacity }}
         className="absolute inset-0 bg-gradient-radial from-primary-500/10 via-transparent to-transparent pointer-events-none"
@@ -161,7 +161,7 @@ const Services = () => {
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl" />
               <div className="p-4 h-full bg-gradient-to-b from-primary-500/10 to-transparent">
                 <img
-                  src="/mockup-analytics.png"
+                  src="/public/mockup-analytics.png"
                   alt="Analytics Dashboard"
                   className="w-full h-full object-cover rounded-3xl"
                 />

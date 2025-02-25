@@ -2,26 +2,58 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { ChartBarIcon, ArrowTrendingUpIcon, PresentationChartLineIcon } from '@heroicons/react/24/outline'
+import {
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  PresentationChartLineIcon
+} from '@heroicons/react/24/outline'
 
 const PerformanceMarketing = () => {
-  // Animation variants
+  // Enhanced container variants with spring physics
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
+      scale: 1,
       transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+        mass: 0.5,
         staggerChildren: 0.2
       }
     }
   }
 
+  // Enhanced item variants with 3D effects
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30, rotateX: -15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6 }
+      rotateX: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        mass: 0.5,
+        duration: 0.8
+      }
+    }
+  }
+
+  // Enhanced hover variants with spring physics
+  const hoverVariants = {
+    hover: {
+      scale: 1.03,
+      y: -5,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+        mass: 0.5,
+        duration: 0.3
+      }
     }
   }
 
@@ -33,33 +65,46 @@ const PerformanceMarketing = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-custom flex flex-col">
+    <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      {/* Fundo radial animado */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            'radial-gradient(circle at 20% 50%, rgba(239,68,68,0.2), transparent 40%), radial-gradient(circle at 80% 20%, rgba(59,130,246,0.2), transparent 30%)'
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+
       <Navbar />
 
       {/* Hero Section */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 via-transparent to-transparent" />
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden z-10">
+        <div className="absolute inset-0 bg-gradient-radial from-primary-500/20 via-transparent to-transparent pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-6">
               Marketing de
               <span className="text-gradient"> Performance </span>
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
-              Otimize suas campanhas com base em dados e alcance resultados mensuráveis.
-              Aumente seu ROI com estratégias orientadas por performance.
+              A <strong>VirtualMark</strong> eleva suas campanhas a outro patamar
+              com foco total em resultados. Nossas estratégias orientadas por
+              dados garantem o máximo retorno para cada investimento.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* KPIs Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+      {/* KPIs */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900/50 z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -67,96 +112,232 @@ const PerformanceMarketing = () => {
           className="max-w-7xl mx-auto"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {kpis.map((kpi, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 text-center"
-              >
-                <kpi.icon className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-                <p className="text-3xl font-bold text-primary-500 mb-2">{kpi.value}</p>
-                <p className="text-gray-400">{kpi.label}</p>
-              </motion.div>
-            ))}
+            {kpis.map((kpi, index) => {
+              const IconComp = kpi.icon
+              return (
+                <motion.div
+                  key={index}
+                  variants={{ ...itemVariants, hover: hoverVariants.hover }}
+                  whileHover="hover"
+                  className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 text-center relative overflow-hidden"
+                >
+                  {/* Luz suave girando */}
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                    }}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 20,
+                      ease: 'linear'
+                    }}
+                  />
+                  <IconComp className="w-12 h-12 text-primary-500 mx-auto mb-4 relative z-10" />
+                  <p className="text-3xl font-bold text-primary-500 mb-2 relative z-10">
+                    {kpi.value}
+                  </p>
+                  <p className="text-gray-400 relative z-10">{kpi.label}</p>
+                </motion.div>
+              )
+            })}
           </div>
         </motion.div>
       </section>
 
-      {/* Content Sections */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* Estratégias e Pilares */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="max-w-7xl mx-auto"
         >
-          {/* Optimization Strategies */}
+          {/* Estratégias */}
           <motion.div variants={itemVariants} className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Estratégias de Otimização</h2>
+            <h2 className="text-3xl font-extrabold mb-8 text-white">
+              Estratégias de Otimização
+            </h2>
+            <p className="text-gray-400 max-w-3xl mb-8">
+              Realizamos testes contínuos, análise de dados e ajustes rápidos
+              para manter suas campanhas sempre na melhor performance possível.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <h3 className="text-xl font-semibold mb-4">Testes A/B</h3>
+              <motion.div
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Testes A/B
+                </h3>
                 <ul className="space-y-3 text-gray-400">
-                  <li>• Otimização de Títulos</li>
-                  <li>• Testes de Imagens</li>
-                  <li>• Variações de CTA</li>
-                  <li>• Landing Pages</li>
+                  <li>• Títulos, imagens e CTAs</li>
+                  <li>• Segmentação e público-alvo</li>
+                  <li>• Modelos de landing pages</li>
                 </ul>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <h3 className="text-xl font-semibold mb-4">Análise de Dados</h3>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
+              <motion.div
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Análise de Dados
+                </h3>
                 <ul className="space-y-3 text-gray-400">
-                  <li>• Tracking Avançado</li>
-                  <li>• Análise de Funil</li>
-                  <li>• Segmentação</li>
-                  <li>• Relatórios Personalizados</li>
+                  <li>• Tracking avançado (GA4, Pixel, Tag Manager)</li>
+                  <li>• Relatórios em tempo real</li>
+                  <li>• Segmentação e remarketing inteligente</li>
                 </ul>
-              </div>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(59,130,246,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* Performance Pillars */}
+          {/* Pilares */}
           <motion.div variants={itemVariants} className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Pilares de Performance</h2>
+            <h2 className="text-3xl font-extrabold mb-8 text-white">
+              Pilares de Performance
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
+              <motion.div
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
                 <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
                   <span className="text-primary-500 font-bold text-xl">1</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Métricas</h3>
-                <p className="text-gray-400">Acompanhamento detalhado de KPIs relevantes para seu negócio</p>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Métricas
+                </h3>
+                <p className="text-gray-400">
+                  Foco nos KPIs que realmente importam: CAC, LTV, ROAS e mais.
+                </p>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
+
+              <motion.div
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
                 <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
                   <span className="text-primary-500 font-bold text-xl">2</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Otimização</h3>
-                <p className="text-gray-400">Ajustes contínuos baseados em dados para maximizar resultados</p>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Otimização
+                </h3>
+                <p className="text-gray-400">
+                  Ajustes rápidos e contínuos para reduzir custos e elevar
+                  resultados.
+                </p>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(59,130,246,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
+
+              <motion.div
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
                 <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
                   <span className="text-primary-500 font-bold text-xl">3</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Escalabilidade</h3>
-                <p className="text-gray-400">Estratégias para crescimento sustentável e resultados consistentes</p>
-              </div>
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Escalabilidade
+                </h3>
+                <p className="text-gray-400">
+                  Estratégias de crescimento para manter a performance mesmo em
+                  grandes volumes de tráfego.
+                </p>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* CTA Section */}
+          {/* CTA Final */}
           <motion.div
             variants={itemVariants}
             className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-12 text-center"
+            whileHover={{ scale: 1.02 }}
           >
-            <h2 className="text-3xl font-bold mb-6">Quer Melhorar seus Resultados?</h2>
+            <h2 className="text-3xl font-extrabold mb-6 text-white">
+              Buscando Alta Performance?
+            </h2>
             <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              Descubra como nossa abordagem orientada por dados pode transformar
-              suas campanhas em máquinas de resultados.
+              A <strong>VirtualMark</strong> tem a solução perfeita para
+              potencializar suas campanhas e garantir resultados concretos.
+              Fale agora com nossos especialistas.
             </p>
             <Link
               to="/contact"
               className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-semibold
-                       hover:bg-gray-100 transition-colors duration-300 transform hover:-translate-y-1"
+                         hover:bg-gray-100 transition-colors duration-300 transform hover:-translate-y-1
+                         shadow-lg shadow-primary-700/30"
             >
               Fale com um Especialista
             </Link>

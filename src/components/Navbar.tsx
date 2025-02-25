@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
+import { useContact } from '../contexts/ContactContext'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,6 +18,20 @@ const Navbar = () => {
   }, [])
 
   const [isServicesOpen, setIsServicesOpen] = useState(false)
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleMouseEnter = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+    }
+    setIsServicesOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsServicesOpen(false)
+    }, 500)
+  }
 
   const serviceLinks = [
     { name: 'Gestão de Tráfego', href: '/services/traffic-management' },
@@ -38,10 +53,11 @@ const Navbar = () => {
     { name: 'Contato', href: '/contact' }
   ]
 
+  const { contactInfo } = useContact()
+
   const handleContactClick = () => {
-    const phoneNumber = '5521999999999' // Replace with actual phone number
     const message = 'Olá! Gostaria de saber mais sobre os serviços da VirtualMark.'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(message)}`
     window.open(whatsappURL, '_blank')
   }
 
@@ -63,12 +79,12 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <div key={link.name} className="relative group">
+              <div key={link.name} className="relative group py-4">
                 {link.hasSubmenu ? (
                   <div
-                    className="text-gray-300 hover:text-primary-500 transition-colors cursor-pointer flex items-center space-x-1"
-                    onMouseEnter={() => setIsServicesOpen(true)}
-                    onMouseLeave={() => setIsServicesOpen(false)}
+                    className="text-gray-300 hover:text-primary-500 transition-colors cursor-pointer flex items-center space-x-1 group relative py-2"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                   >
                     <span>{link.name}</span>
                     <svg
@@ -81,12 +97,12 @@ const Navbar = () => {
                     </svg>
                     {/* Dropdown Menu */}
                     {isServicesOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-sm border border-gray-800 rounded-lg shadow-xl py-2">
+                      <div className="absolute top-full left-0 w-64 bg-gray-900/95 backdrop-blur-sm border border-gray-800 rounded-lg shadow-xl py-2 mt-2">
                         {link.submenu?.map((subLink) => (
                           <Link
                             key={subLink.name}
                             to={subLink.href}
-                            className="block px-4 py-2 text-gray-300 hover:text-primary-500 hover:bg-gray-800/50 transition-colors"
+                            className="block px-4 py-3 text-gray-300 hover:text-primary-500 hover:bg-gray-800/50 transition-colors"
                           >
                             {subLink.name}
                           </Link>
@@ -115,6 +131,7 @@ const Navbar = () => {
 
           {/* Language Selector and CTA Button */}
           <div className="hidden md:flex items-center space-x-8">
+            {/* Language selector commented out
             <div className="flex items-center space-x-2 text-sm text-gray-400">
               {languages.map((lang, index) => (
                 <span key={lang} className="hover:text-primary-500 cursor-pointer transition-colors">
@@ -123,6 +140,7 @@ const Navbar = () => {
                 </span>
               ))}
             </div>
+            */}
             <button
               onClick={handleContactClick}
               className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20"

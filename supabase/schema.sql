@@ -10,7 +10,8 @@ create table if not exists public.posts (
   date text not null,
   read_time text not null,
   image_url text not null,
-  featured boolean default false not null
+  featured boolean default false not null,
+  status text not null default 'draft' check (status in ('draft', 'published'))
 );
 
 -- Set up Row Level Security (RLS)

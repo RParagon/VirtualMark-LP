@@ -133,9 +133,15 @@ const CasesPage = () => {
                   key={case_.id}
                   variants={itemVariants}
                   whileHover={{ y: -5 }}
-                  className="bg-gray-900/50 rounded-xl overflow-hidden border border-gray-800
-                           hover:border-primary-500/50 transition-all duration-300"
+                  className={`bg-gray-900/50 rounded-xl overflow-hidden border transition-all duration-300 ${case_.featured ? 'border-primary-500 shadow-lg shadow-primary-500/20 scale-105' : 'border-gray-800 hover:border-primary-500/50'}`}
                 >
+                  {case_.featured && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <span className="px-3 py-1 bg-primary-500 text-white text-sm font-medium rounded-full shadow-lg">
+                        Destaque
+                      </span>
+                    </div>
+                  )}
                   <Link to={`/cases/${case_.slug}`}>
                     <div className="aspect-w-16 aspect-h-9">
                       <img
@@ -149,14 +155,13 @@ const CasesPage = () => {
                         {case_.tools.slice(0, 3).map((tool, i) => (
                           <span
                             key={i}
-                            className="px-3 py-1 bg-primary-500/10 text-primary-500
-                                     rounded-full text-sm"
+                            className="px-3 py-1 bg-primary-500/10 text-primary-500 rounded-full text-sm"
                           >
                             {tool}
                           </span>
                         ))}
                       </div>
-                      <h3 className="text-xl font-bold mb-3">{case_.title}</h3>
+                      <h3 className={`text-xl font-bold mb-3 ${case_.featured ? 'text-primary-500' : ''}`}>{case_.title}</h3>
                       <p className="text-gray-400 mb-4 line-clamp-2">
                         {case_.description}
                       </p>

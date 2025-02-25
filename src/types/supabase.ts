@@ -14,6 +14,7 @@ export interface Database {
           read_time: string
           image_url: string
           featured: boolean
+          status: 'draft' | 'published'
         }
         Insert: Omit<Database['public']['Tables']['posts']['Row'], 'id' | 'created_at'>
         Update: Partial<Database['public']['Tables']['posts']['Insert']>

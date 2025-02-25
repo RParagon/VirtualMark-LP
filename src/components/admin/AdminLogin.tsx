@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface AdminLoginProps {
   onLogin: (success: boolean) => void
@@ -11,35 +11,21 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        onLogin(true)
-      }
-    }
-    checkSession()
-  }, [])
+  const { signIn } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
+      const { error: signInError } = await signIn(email, password, rememberMe)
 
-      if (error) {
-        setError(error.message)
+      if (signInError) {
+        setError(signInError.message)
         onLogin(false)
         return
       }
 
-      if (data.session) {
-        setError('')
-        onLogin(true)
-      }
+      setError('')
+      onLogin(true)
     } catch (err) {
       setError('An error occurred during login')
       onLogin(false)

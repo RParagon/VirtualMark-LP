@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { Link } from 'react-router-dom'
 
 const Hero = () => {
   const [ref, inView] = useInView({
@@ -67,12 +68,12 @@ const Hero = () => {
           variants={itemVariants}
           className="flex flex-wrap justify-center gap-4 mb-16"
         >
-          <button className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20">
+          <a href="/#service" className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20">
             Quero mais informações
-          </button>
-          <button className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors">
+          </a>
+          <Link to="/cases" className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors">
             Ver cases de sucesso
-          </button>
+          </Link>
         </motion.div>
 
         <motion.div

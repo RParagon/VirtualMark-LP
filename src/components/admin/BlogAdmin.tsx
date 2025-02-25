@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { usePosts } from '../../contexts/PostContext'
 import { Editor } from '@tinymce/tinymce-react'
@@ -14,6 +14,7 @@ interface BlogPost {
   readTime: string
   imageUrl: string
   featured: boolean
+  status: 'draft' | 'published'
 }
 
 const BlogAdmin = () => {
@@ -21,7 +22,24 @@ const BlogAdmin = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  // State management for posts is handled by the context
+  const [localPosts, setLocalPosts] = useState<BlogPost[]>([])
+  const [dashboardStats, setDashboardStats] = useState({
+    total: 0,
+    published: 0,
+    draft: 0,
+    featured: 0
+  })
+
+  useEffect(() => {
+    const filteredPosts = posts.filter(p => p.status === 'published' || p.status === 'draft')
+    setLocalPosts(filteredPosts)
+    setDashboardStats({
+      total: filteredPosts.length,
+      published: filteredPosts.filter(p => p.status === 'published').length,
+      draft: filteredPosts.filter(p => p.status === 'draft').length,
+      featured: filteredPosts.filter(p => p.featured).length
+    })
+  }, [posts])
 
   const categories = ['marketing', 'social media', 'seo', 'analytics']
 
@@ -36,7 +54,8 @@ const BlogAdmin = () => {
       date: new Date().toISOString().split('T')[0],
       readTime: '5 min',
       imageUrl: '/blog/default-post.jpg',
-      featured: false
+      featured: false,
+      status: 'draft'
     }
     setSelectedPost(newPost)
     setIsEditing(true)
@@ -114,17 +133,36 @@ const BlogAdmin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-custom py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">
+    <div className="min-h-screen bg-gradient-custom flex flex-col">
+      <div className="flex-1 p-8">
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Total Posts</h3>
+            <p className="text-2xl font-bold">{dashboardStats.total}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Published</h3>
+            <p className="text-2xl font-bold text-green-500">{dashboardStats.published}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Drafts</h3>
+            <p className="text-2xl font-bold text-yellow-500">{dashboardStats.draft}</p>
+          </div>
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 rounded-xl border border-gray-800">
+            <h3 className="text-gray-400 text-sm">Featured</h3>
+            <p className="text-2xl font-bold text-primary-500">{dashboardStats.featured}</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">
             Gerenciar
             <span className="text-gradient"> Blog</span>
           </h1>
           <button
             onClick={handleCreatePost}
             disabled={isLoading}
-            className={`flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex items-center gap-2 px-4 py-2 w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <PlusIcon className="w-5 h-5" />
             Novo Post
@@ -132,11 +170,11 @@ const BlogAdmin = () => {
         </div>
 
         {isEditing ? (
-          <div className="bg-gray-900/50 backdrop-blur-sm p-6 rounded-xl border border-gray-800">
-            <h2 className="text-xl font-semibold mb-6">
+          <div className="bg-gray-900/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl border border-gray-800">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
               {selectedPost?.id ? 'Editar Post' : 'Novo Post'}
             </h2>
-            <form className="space-y-6" onSubmit={(e) => {
+            <form className="space-y-4 sm:space-y-6" onSubmit={(e) => {
               e.preventDefault()
               selectedPost && handleSavePost(selectedPost)
             }}>
@@ -179,9 +217,8 @@ const BlogAdmin = () => {
                     plugins: [
                       'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                       'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
-                      'emoticons', 'template', 'paste', 'searchreplace', 'visualchars',
-                      'codesample', 'directionality'
+                      'insertdatetime', 'media', 'table', 'help', 'wordcount',
+                      'emoticons', 'visualchars', 'codesample', 'directionality'
                     ],
                     toolbar: 'undo redo | blocks | ' +
                       'bold italic forecolor backcolor | alignleft aligncenter ' +
@@ -194,7 +231,7 @@ const BlogAdmin = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
                     Categoria
@@ -209,7 +246,7 @@ const BlogAdmin = () => {
                       <option key={category} value={category}>
                         {category.charAt(0).toUpperCase() + category.slice(1)}
                       </option>
-                    ))}
+                ))}
                   </select>
                 </div>
 
@@ -227,7 +264,7 @@ const BlogAdmin = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
                     Data
@@ -268,17 +305,32 @@ const BlogAdmin = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selectedPost?.featured}
-                  onChange={(e) => setSelectedPost(prev => ({ ...prev!, featured: e.target.checked }))}
-                  className="w-4 h-4 text-primary-600 border-gray-700 rounded focus:ring-primary-500"
-                  disabled={isLoading}
-                />
-                <label className="text-sm font-medium text-gray-400">
-                  Destacar post
-                </label>
+              <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
+                <h4 className="text-lg font-semibold text-white mb-4">Publishing Options</h4>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                  <select
+                    value={selectedPost?.status}
+                    onChange={(e) => setSelectedPost(prev => ({ ...prev!, status: e.target.value as 'draft' | 'published' }))}
+                    className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedPost?.featured}
+                    onChange={(e) => setSelectedPost(prev => ({ ...prev!, featured: e.target.checked }))}
+                    className="w-5 h-5 text-primary-600 border-gray-700 rounded bg-gray-900/50 focus:ring-primary-500"
+                    id="featured"
+                    disabled={isLoading}
+                  />
+                  <label htmlFor="featured" className="text-sm text-gray-300 select-none cursor-pointer">Featured Post</label>
+                </div>
               </div>
 
               <div className="flex justify-end gap-4">
@@ -305,39 +357,42 @@ const BlogAdmin = () => {
           </div>
         ) : (
           <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-800/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Título</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Categoria</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Autor</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {posts.map((post) => (
-                  <tr key={post.id}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-800">
+                <thead className="bg-gray-900/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Featured</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                {localPosts.map((post) => (
+                  <tr key={post.id} className="hover:bg-gray-800/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <img
-                          src={post.imageUrl}
-                          alt={post.title}
-                          className="w-10 h-10 rounded-lg object-cover mr-3"
-                        />
-                        <div className="text-sm font-medium text-white">{post.title}</div>
-                      </div>
+                      <div className="text-sm font-medium text-white">{post.title}</div>
+                      <div className="text-sm text-gray-400">{post.excerpt.substring(0, 50)}...</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-500/10 text-primary-500">
                         {post.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{post.author}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {new Date(post.date).toLocaleDateString()}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${post.status === 'published' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+                        {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {post.featured ? (
+                        <span className="text-primary-500">✓</span>
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => {
                           setSelectedPost(post)
@@ -356,10 +411,60 @@ const BlogAdmin = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+            ))}
               </tbody>
             </table>
           </div>
+
+          {/* Mobile view */}
+          <div className="sm:hidden space-y-4 p-4">
+                {posts.map((post) => (
+                  <div key={post.id} className="bg-gray-800/50 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={post.imageUrl}
+                          alt={post.title}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                        <div>
+                          <h3 className="text-sm font-medium text-white">{post.title}</h3>
+                          <span className="text-xs text-gray-400">{post.author}</span>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => {
+                            setSelectedPost(post)
+                            setIsEditing(true)
+                          }}
+                          className="p-2 text-primary-500 hover:text-primary-400 bg-gray-900/50 rounded-lg"
+                          disabled={isLoading}
+                        >
+                          <PencilIcon className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          className="p-2 text-red-500 hover:text-red-400 bg-gray-900/50 rounded-lg"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="px-2 py-1 rounded-full bg-primary-500/10 text-primary-500 font-semibold">
+                        {post.category}
+                      </span>
+                      <div className="flex items-center space-x-2 text-gray-400">
+                        <span>{new Date(post.date).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span>{post.readTime}</span>
+                      </div>
+                    </div>
+                  </div>
+            ))}
+          </div>
+        </div>
         )}
       </div>
     </div>

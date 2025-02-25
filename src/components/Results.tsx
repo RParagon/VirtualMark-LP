@@ -47,7 +47,7 @@ const Results = () => {
       ],
       // Imagem (16:9) - Sugestão de dimensão: ~1200x675px
       // Substitua por um path real no seu projeto ou um placeholder
-      image: '/cases/game-safari.jpg'
+      image: '/public/game-safari.png'
     },
     {
       // 2) Amazônia Vital
@@ -64,7 +64,7 @@ const Results = () => {
         { value: '+95%', label: 'Aumento na Taxa de Retorno' }
       ],
       // Sugestão de dimensão: ~1200x675px
-      image: '/cases/amazonia-vital.jpg'
+      image: '/public/amazonia-vital.png'
     },
     {
       // 3) Colonial Guararema
@@ -81,7 +81,7 @@ const Results = () => {
         { value: '+800', label: 'Mensagens no WhatsApp' }
       ],
       // Sugestão de dimensão: ~1200x675px
-      image: '/cases/colonial-guararema.jpg'
+      image: '/colonial-guararema.png'
     }
   ]
 

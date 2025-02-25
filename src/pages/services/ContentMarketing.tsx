@@ -2,64 +2,124 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { DocumentTextIcon, GlobeAltIcon, MegaphoneIcon } from '@heroicons/react/24/outline'
+import {
+  DocumentTextIcon,
+  GlobeAltIcon,
+  MegaphoneIcon
+} from '@heroicons/react/24/outline'
+
 
 const ContentMarketing = () => {
-  // Animation variants
+  // Enhanced container variants with spring physics
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
+      scale: 1,
       transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+        mass: 0.5,
         staggerChildren: 0.2
       }
     }
   }
 
+  // Enhanced item variants with 3D effects
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30, rotateX: -15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6 }
+      rotateX: 0,
+      transition: { 
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        mass: 0.5,
+        duration: 0.8
+      }
     }
   }
 
-  // Content types data
+  // Enhanced hover variants with spring physics
+  const hoverVariants = {
+    hover: {
+      scale: 1.03,
+      y: -5,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+        mass: 0.5,
+        duration: 0.3
+      }
+    }
+  }
+
+  // Dados de tipos de conteúdo
   const contentTypes = [
-    { icon: DocumentTextIcon, title: 'Blog Posts', description: 'Conteúdo otimizado para SEO' },
-    { icon: GlobeAltIcon, title: 'Redes Sociais', description: 'Engajamento e autoridade' },
-    { icon: MegaphoneIcon, title: 'Email Marketing', description: 'Nutrição de leads' }
+    {
+      icon: DocumentTextIcon,
+      title: 'Blog Posts',
+      description: 'Posts aprofundados e otimizados para SEO, elevando sua autoridade'
+    },
+    {
+      icon: GlobeAltIcon,
+      title: 'Redes Sociais',
+      description: 'Calendário editorial estratégico para engajar e converter'
+    },
+    {
+      icon: MegaphoneIcon,
+      title: 'Email Marketing',
+      description: 'Sequências automatizadas e campanhas personalizadas'
+    }
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-custom flex flex-col">
+    <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      {/* Fundo radial animado adicional */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            'radial-gradient(circle at 30% 60%, rgba(239,68,68,0.2), transparent 40%), radial-gradient(circle at 70% 30%, rgba(59,130,246,0.2), transparent 40%)'
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+
       <Navbar />
 
       {/* Hero Section */}
-      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 via-transparent to-transparent" />
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden z-10">
+        {/* Radial no Hero */}
+        <div className="absolute inset-0 bg-gradient-radial from-primary-500/20 via-transparent to-transparent pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-6">
               Marketing de
               <span className="text-gradient"> Conteúdo </span>
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
-              Atraia, engaje e converta seu público-alvo com conteúdo relevante e estratégico.
-              Construa autoridade e gere resultados orgânicos consistentes.
+              A <strong>VirtualMark</strong> cria e distribui conteúdos estratégicos para
+              atrair, engajar e converter seu público. Construa autoridade e
+              fortaleça seu relacionamento com clientes através de histórias bem
+              contadas.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Content Types Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+      {/* Tipos de Conteúdo */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900/50 z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -67,96 +127,137 @@ const ContentMarketing = () => {
           className="max-w-7xl mx-auto"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {contentTypes.map((type, index) => (
+            {contentTypes.map((ct, index) => (
               <motion.div
                 key={index}
-                variants={itemVariants}
-                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 text-center"
+                variants={{ ...itemVariants, hover: hoverVariants.hover }}
+                whileHover="hover"
+                className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 text-center relative overflow-hidden"
               >
-                <type.icon className="w-12 h-12 text-primary-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{type.title}</h3>
-                <p className="text-gray-400">{type.description}</p>
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 20,
+                    ease: 'linear'
+                  }}
+                />
+                <ct.icon className="w-12 h-12 text-primary-500 mx-auto mb-4 relative z-10" />
+                <h3 className="text-xl font-semibold mb-2 text-white relative z-10">
+                  {ct.title}
+                </h3>
+                <p className="text-gray-400 relative z-10">{ct.description}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </section>
 
-      {/* Content Sections */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* Seções adicionais */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="max-w-7xl mx-auto"
         >
-          {/* Strategy Section */}
+          {/* Estratégia */}
           <motion.div variants={itemVariants} className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Estratégia de Conteúdo</h2>
+            <h2 className="text-3xl font-extrabold mb-8 text-white">
+              Estratégia de Conteúdo
+            </h2>
+            <p className="text-gray-400 max-w-3xl mb-8">
+              Planejamos cada etapa do funil, criando conteúdos que falam a
+              língua do seu público. Do blog ao social media, tudo é otimizado
+              para engajamento e conversão.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <h3 className="text-xl font-semibold mb-4">Planejamento Editorial</h3>
+              <motion.div
+                className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Planejamento Editorial
+                </h3>
                 <ul className="space-y-3 text-gray-400">
-                  <li>• Pesquisa de Palavras-chave</li>
-                  <li>• Calendário Editorial</li>
-                  <li>• Personas</li>
-                  <li>• Jornada do Cliente</li>
+                  <li>• Calendário integrado</li>
+                  <li>• Personas e jornada do cliente</li>
+                  <li>• Palavras-chave estratégicas</li>
+                  <li>• Análise de concorrência</li>
                 </ul>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <h3 className="text-xl font-semibold mb-4">Produção e Distribuição</h3>
+                {/* Luz suave */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(239,68,68,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
+
+              <motion.div
+                className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 relative overflow-hidden"
+                whileHover="hover"
+                variants={hoverVariants}
+              >
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Distribuição e Engajamento
+                </h3>
                 <ul className="space-y-3 text-gray-400">
-                  <li>• Criação de Conteúdo</li>
-                  <li>• Otimização SEO</li>
-                  <li>• Social Media</li>
-                  <li>• Email Marketing</li>
+                  <li>• Social Media e Influencers</li>
+                  <li>• SEO e link building</li>
+                  <li>• Email Marketing segmentado</li>
+                  <li>• Parcerias estratégicas</li>
                 </ul>
-              </div>
+                {/* Luz suave */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(59,130,246,0.05), transparent 60%)'
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 30,
+                    ease: 'linear'
+                  }}
+                />
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* Benefits Section */}
-          <motion.div variants={itemVariants} className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Benefícios</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-primary-500 font-bold text-xl">1</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Autoridade</h3>
-                <p className="text-gray-400">Estabeleça-se como referência no seu segmento</p>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-primary-500 font-bold text-xl">2</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Tráfego Orgânico</h3>
-                <p className="text-gray-400">Atraia visitantes qualificados sem investir em mídia paga</p>
-              </div>
-              <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700">
-                <div className="w-12 h-12 bg-primary-500/10 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-primary-500 font-bold text-xl">3</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Engajamento</h3>
-                <p className="text-gray-400">Construa relacionamentos duradouros com sua audiência</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTA Section */}
+          {/* CTA */}
           <motion.div
             variants={itemVariants}
             className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-12 text-center"
+            whileHover={{ scale: 1.02 }}
           >
-            <h2 className="text-3xl font-bold mb-6">Pronto para Criar Conteúdo que Converte?</h2>
+            <h2 className="text-3xl font-extrabold mb-6 text-white">
+              Quer Produzir Conteúdos que Convertem?
+            </h2>
             <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              Descubra como nossa estratégia de conteúdo pode transformar
-              visitantes em clientes fiéis.
+              A <strong>VirtualMark</strong> está pronta para levar sua
+              estratégia de conteúdo ao próximo nível. Fale com a gente agora e
+              conquiste resultados orgânicos e duradouros.
             </p>
             <Link
               to="/contact"
               className="inline-block px-8 py-4 bg-white text-primary-600 rounded-lg font-semibold
-                       hover:bg-gray-100 transition-colors duration-300 transform hover:-translate-y-1"
+                         hover:bg-gray-100 transition-colors duration-300 transform hover:-translate-y-1
+                         shadow-lg shadow-primary-700/30"
             >
               Fale com um Especialista
             </Link>

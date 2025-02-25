@@ -27,6 +27,7 @@ interface BlogPost {
   readTime: string
   imageUrl: string
   featured?: boolean
+  status: 'draft' | 'published'
 }
 
 const Blog = () => {
@@ -82,7 +83,8 @@ const Blog = () => {
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory =
       selectedCategory === 'all' || post.category === selectedCategory
-    return matchesSearch && matchesCategory
+    const isPublished = post.status === 'published'
+    return matchesSearch && matchesCategory && isPublished
   })
 
   // Lógica de paginação
