@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useParams } from 'react-router-dom'
 import { useCases } from '../contexts/CaseContext'
-import { ChartBarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -28,7 +28,7 @@ const CaseDetailPage = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: {
+      transition: { 
         type: "spring",
         stiffness: 100,
         damping: 15,
@@ -45,20 +45,6 @@ const CaseDetailPage = () => {
       transition: {
         duration: 1.2,
         ease: "easeOut"
-      }
-    }
-  }
-
-  const cardVariants = {
-    hidden: { opacity: 0, x: 50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-        duration: 0.8
       }
     }
   }

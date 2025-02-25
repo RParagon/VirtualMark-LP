@@ -110,7 +110,7 @@ export function PostProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const addPost = async (post: Omit<BlogPost, 'id'>) => {
+  const addPost = async (post: Omit<BlogPost, 'id'>): Promise<boolean> => {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
       console.error('Authentication required')
@@ -139,7 +139,7 @@ export function PostProvider({ children }: { children: ReactNode }) {
     return true
   }
 
-  const updatePost = async (post: BlogPost) => {
+  const updatePost = async (post: BlogPost): Promise<boolean> => {
     const updatedPost: UpdatePost = {
       title: post.title,
       excerpt: post.excerpt,

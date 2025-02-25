@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCases } from '../contexts/CaseContext'
-import { ChartBarIcon, RocketLaunchIcon, StarIcon } from '@heroicons/react/24/outline'
+import { ChartBarIcon } from '@heroicons/react/24/outline'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 

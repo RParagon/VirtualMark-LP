@@ -122,7 +122,7 @@ const CaseAdmin = () => {
         throw new Error('Authentication required. Please log in again.')
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('cases')
         .upsert([
           {
@@ -278,7 +278,7 @@ const CaseAdmin = () => {
                 <Editor
                   apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
                   value={selectedCase?.challenge}
-                  onEditorChange={(content) => setSelectedCase(prev => ({ ...prev!, challenge: content }))}
+                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, challenge: content }))}
                   init={{
                     height: 300,
                     menubar: true,
@@ -301,7 +301,25 @@ const CaseAdmin = () => {
                 <Editor
                   apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
                   value={selectedCase?.solution}
-                  onEditorChange={(content) => setSelectedCase(prev => ({ ...prev!, solution: content }))}
+                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, solution: content }))}
+                  init={{
+                    height: 300,
+                    menubar: true,
+                    plugins: [
+                      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                    ],
+                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
+                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                  }}
+                  disabled={isLoading}
+                />
+
+                <Editor
+                  apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
+                  value={selectedCase?.results}
+                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, results: content }))}
                   init={{
                     height: 300,
                     menubar: true,
@@ -324,7 +342,7 @@ const CaseAdmin = () => {
                 <Editor
                   apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
                   value={selectedCase?.results}
-                  onEditorChange={(content) => setSelectedCase(prev => ({ ...prev!, results: content }))}
+                  onEditorChange={(content: string) => setSelectedCase(prev => ({ ...prev!, results: content }))}
                   init={{
                     height: 300,
                     menubar: true,

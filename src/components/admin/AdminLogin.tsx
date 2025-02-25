@@ -20,7 +20,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       }
     }
     checkSession()
-  }, [onLogin])
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,11 +29,13 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         email,
         password
       })
+
       if (error) {
         setError(error.message)
         onLogin(false)
         return
       }
+
       if (data.session) {
         setError('')
         onLogin(true)
@@ -53,12 +55,16 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         className="max-w-md w-full space-y-8 bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-gray-800"
       >
         <div>
-          <h2 className="text-center text-3xl font-bold text-white">Admin Login</h2>
+          <h2 className="text-center text-3xl font-bold text-white">
+            Admin Login
+          </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">Email</label>
+              <label htmlFor="email" className="sr-only">
+                Email
+              </label>
               <input
                 id="email"
                 name="email"
@@ -71,7 +77,9 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
               <input
                 id="password"
                 name="password"
@@ -99,7 +107,10 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               </label>
             </div>
           </div>
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
+
           <div>
             <button
               type="submit"

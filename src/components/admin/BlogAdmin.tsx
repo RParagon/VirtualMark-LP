@@ -21,6 +21,7 @@ const BlogAdmin = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  // State management for posts is handled by the context
 
   const categories = ['marketing', 'social media', 'seo', 'analytics']
 
@@ -43,48 +44,56 @@ const BlogAdmin = () => {
 
   const validatePost = (post: BlogPost): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
+    
     if (!post.title.trim()) errors.push('Title is required')
     if (!post.excerpt.trim()) errors.push('Excerpt is required')
     if (!post.content.trim()) errors.push('Content is required')
     if (!post.author.trim()) errors.push('Author is required')
     if (!post.imageUrl.trim()) errors.push('Image URL is required')
+    
     if (post.imageUrl.trim() && !post.imageUrl.match(/^(\/blog\/|https?:\/\/).+/)) {
       errors.push('Image URL must start with "/blog/" or be a valid HTTP(S) URL')
     }
-    return { isValid: errors.length === 0, errors }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
   }
 
   const handleSavePost = async (post: BlogPost) => {
     const validation = validatePost(post)
+    
     if (!validation.isValid) {
       alert('Please fix the following errors:\n' + validation.errors.join('\n'))
       return
     }
+
     setIsLoading(true)
+
     let imageUrl = post.imageUrl.trim()
     if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/blog/')) {
       imageUrl = `/blog/${imageUrl}`
     }
-    const postToSave = { ...post, imageUrl }
+
+    const postToSave = {
+      ...post,
+      imageUrl
+    }
+
     try {
-      let success = false
       if (post.id) {
         await updatePost(postToSave)
-        success = true
       } else {
         const { id, ...postWithoutId } = postToSave
         await addPost(postWithoutId)
-        success = true
       }
-      if (success) {
-        setSelectedPost(null)
-        setIsEditing(false)
-      } else {
-        alert('Failed to save the post. Please try again.')
-      }
+
+      setSelectedPost(null)
+      setIsEditing(false)
     } catch (error) {
       console.error('Error saving post:', error)
-      alert('An error occurred while saving the post. Please try again.')
+      alert(error instanceof Error ? error.message : 'An error occurred while saving the post. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -94,13 +103,10 @@ const BlogAdmin = () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       setIsLoading(true)
       try {
-        const success = await deletePost(postId)
-        if (!success) {
-          alert('Failed to delete the post. Please try again.')
-        }
+        await deletePost(postId)
       } catch (error) {
         console.error('Error deleting post:', error)
-        alert('An error occurred while deleting the post. Please try again.')
+        alert(error instanceof Error ? error.message : 'An error occurred while deleting the post. Please try again.')
       } finally {
         setIsLoading(false)
       }
@@ -112,7 +118,8 @@ const BlogAdmin = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
-            Gerenciar <span className="text-gradient">Blog</span>
+            Gerenciar
+            <span className="text-gradient"> Blog</span>
           </h1>
           <button
             onClick={handleCreatePost}
@@ -129,15 +136,14 @@ const BlogAdmin = () => {
             <h2 className="text-xl font-semibold mb-6">
               {selectedPost?.id ? 'Editar Post' : 'Novo Post'}
             </h2>
-            <form
-              className="space-y-6"
-              onSubmit={(e) => {
-                e.preventDefault()
-                selectedPost && handleSavePost(selectedPost)
-              }}
-            >
+            <form className="space-y-6" onSubmit={(e) => {
+              e.preventDefault()
+              selectedPost && handleSavePost(selectedPost)
+            }}>
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Título</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Título
+                </label>
                 <input
                   type="text"
                   value={selectedPost?.title}
@@ -148,7 +154,9 @@ const BlogAdmin = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Resumo</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Resumo
+                </label>
                 <textarea
                   value={selectedPost?.excerpt}
                   onChange={(e) => setSelectedPost(prev => ({ ...prev!, excerpt: e.target.value }))}
@@ -158,7 +166,9 @@ const BlogAdmin = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Conteúdo</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Conteúdo
+                </label>
                 <Editor
                   apiKey="mmoe8tis76cco6f84kjw97h64f1h1n5lvi8gejpqvnf0yy4h"
                   value={selectedPost?.content}
@@ -173,17 +183,22 @@ const BlogAdmin = () => {
                       'emoticons', 'template', 'paste', 'searchreplace', 'visualchars',
                       'codesample', 'directionality'
                     ],
-                    toolbar: 'undo redo | blocks | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image media link | emoticons codesample | help',
+                    toolbar: 'undo redo | blocks | ' +
+                      'bold italic forecolor backcolor | alignleft aligncenter ' +
+                      'alignright alignjustify | bullist numlist outdent indent | ' +
+                      'removeformat | image media link | emoticons codesample | help',
                     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                     file_picker_types: 'image',
-                    images_upload_url: '/api/upload-image'
+                    images_upload_url: '/api/upload-image' // You'll need to implement this endpoint
                   }}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Categoria</label>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Categoria
+                  </label>
                   <select
                     value={selectedPost?.category}
                     onChange={(e) => setSelectedPost(prev => ({ ...prev!, category: e.target.value }))}
@@ -197,8 +212,11 @@ const BlogAdmin = () => {
                     ))}
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Autor</label>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Autor
+                  </label>
                   <input
                     type="text"
                     value={selectedPost?.author}
@@ -211,7 +229,9 @@ const BlogAdmin = () => {
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Data</label>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Data
+                  </label>
                   <input
                     type="date"
                     value={selectedPost?.date}
@@ -220,8 +240,11 @@ const BlogAdmin = () => {
                     disabled={isLoading}
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Tempo de Leitura</label>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Tempo de Leitura
+                  </label>
                   <input
                     type="text"
                     value={selectedPost?.readTime}
@@ -233,7 +256,9 @@ const BlogAdmin = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">URL da Imagem</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  URL da Imagem
+                </label>
                 <input
                   type="text"
                   value={selectedPost?.imageUrl}
@@ -251,7 +276,9 @@ const BlogAdmin = () => {
                   className="w-4 h-4 text-primary-600 border-gray-700 rounded focus:ring-primary-500"
                   disabled={isLoading}
                 />
-                <label className="text-sm font-medium text-gray-400">Destacar post</label>
+                <label className="text-sm font-medium text-gray-400">
+                  Destacar post
+                </label>
               </div>
 
               <div className="flex justify-end gap-4">
@@ -293,7 +320,11 @@ const BlogAdmin = () => {
                   <tr key={post.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <img src={post.imageUrl} alt={post.title} className="w-10 h-10 rounded-lg object-cover mr-3" />
+                        <img
+                          src={post.imageUrl}
+                          alt={post.title}
+                          className="w-10 h-10 rounded-lg object-cover mr-3"
+                        />
                         <div className="text-sm font-medium text-white">{post.title}</div>
                       </div>
                     </td>
