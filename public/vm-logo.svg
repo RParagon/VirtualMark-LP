@@ -12,22 +12,22 @@
     </linearGradient>
   </defs>
 
-  <!-- Letra V (mais à esquerda) -->
+  <!-- Letra V (posição original) -->
   <path
     d="M 20 20 L 40 80 L 60 20"
     fill="none"
     stroke="url(#gradVM)"
-    stroke-width="20"
+    stroke-width="25"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
 
-  <!-- Letra M (mais espaçosa) -->
+  <!-- Letra M (mais próxima e ainda ampliada) -->
   <path
-    d="M 80 80 L 80 20 L 100 70 L 120 20 L 120 80"
+    d="M 90 80 L 90 20 L 115 60 L 140 20 L 140 80"
     fill="none"
     stroke="url(#gradVM)"
-    stroke-width="20"
+    stroke-width="25"
     stroke-linecap="round"
     stroke-linejoin="round"
   />

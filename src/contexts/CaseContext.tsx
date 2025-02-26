@@ -43,14 +43,15 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
   const fetchCases = async () => {
     try {
       const session = await supabase.auth.getSession()
-      let query = supabase
+      const isAdmin = !!session.data.session
+
+      const query = supabase
         .from('cases')
         .select('*')
         .order('created_at', { ascending: false })
 
-      // Only fetch published cases for non-authenticated users
-      if (!session.data.session) {
-        query = query.eq('status', 'published')
+      if (!isAdmin) {
+        query.eq('status', 'published')
       }
 
       const { data, error } = await query

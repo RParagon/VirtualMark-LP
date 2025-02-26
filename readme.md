@@ -1,163 +1,134 @@
 # Virtual Mark - Digital Marketing Agency Website
 
-![Virtual Mark](./public/favicon.svg)
+<div align="center">
+  <img src="public/vm-logo.svg" alt="Virtual Mark Logo" width="200"/>
+  <p><strong>Transforming Digital Presence into Business Results</strong></p>
+</div>
 
-A modern, responsive website for a digital marketing agency built with React, TypeScript, and Tailwind CSS. Features smooth animations, dynamic content management through Supabase, and a clean, professional design.
+## 🚀 Overview
 
-## 🚀 Features
+Virtual Mark's website is a modern, dynamic web application built with React and TypeScript. It showcases the agency's digital marketing services, success cases, and expertise in driving business growth through digital channels.
 
-- Modern UI/UX with Framer Motion animations
-- Responsive design for all devices
-- Dynamic content management with Supabase
-- Blog system with CMS
-- Case studies showcase
-- Contact form with validation
-- Service pages with detailed information
-- Admin dashboard for content management
+## ✨ Key Features
 
-## 🛠️ Tech Stack
+- 🎯 **Dynamic Service Showcase**
+  - Detailed service pages for Traffic Management, CRM, and more
+  - Interactive UI elements with smooth animations
+  - Comprehensive service descriptions and benefits
 
-- React 18
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- React Router v6
-- Supabase
-- Vite
-- Hero Icons
-- React Icons
+- 📊 **Case Studies & Results**
+  - Real success stories with measurable metrics
+  - Interactive case study presentations
+  - Detailed client testimonials
 
-## 📦 Installation
+- 📱 **Responsive Design**
+  - Mobile-first approach
+  - Smooth animations and transitions
+  - Optimized performance across devices
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/virtual-mark.git
-cd virtual-mark
+- 💼 **Business Features**
+  - Lead generation forms
+  - Newsletter subscription
+  - Contact management system
+
+## 🛠 Technologies
+
+- **Frontend Framework**: React with TypeScript
+- **Styling**: TailwindCSS
+- **Animations**: Framer Motion
+- **State Management**: React Context
+- **Backend Integration**: Supabase
+- **Build Tool**: Vite
+
+## 📦 Project Structure
+
+```
+src/
+├── components/       # Reusable UI components
+├── contexts/         # React context providers
+├── pages/           # Page components
+├── lib/             # Utility functions and configurations
+├── types/           # TypeScript type definitions
+└── data/            # Static data and constants
 ```
 
-2. Install dependencies:
+## 🔥 Core Components
+
+### Services Section
+- Showcases agency's main services
+- Interactive cards with hover effects
+- Detailed service descriptions
+
+### Results Display
+- Animated statistics and metrics
+- Client success stories
+- Interactive case study presentations
+
+### Testimonials
+- Client feedback display
+- Rating system
+- Animated transitions
+
+### Blog System
+- Dynamic content management
+- Category filtering
+- Search functionality
+
+## 🚀 Getting Started
+
+1. **Clone the repository**
+```bash
+git clone [repository-url]
+cd vm2
+```
+
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory and add your Supabase credentials:
+3. **Set up environment variables**
+Create a `.env` file with necessary configurations:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
-4. Start the development server:
+4. **Start development server**
 ```bash
 npm run dev
 ```
 
-## 🗂️ Project Structure
+## 🌟 Performance Optimizations
 
-```
-/
-├── public/              # Static assets
-├── src/
-│   ├── components/      # React components
-│   ├── contexts/        # Context providers
-│   ├── lib/             # Utility functions and configurations
-│   ├── pages/           # Page components
-│   ├── types/           # TypeScript type definitions
-│   ├── App.tsx          # Main application component
-│   └── main.tsx         # Application entry point
-├── supabase/            # Supabase configurations and migrations
-└── package.json         # Project dependencies and scripts
-```
+- Lazy loading of images and components
+- Optimized animations for better performance
+- Efficient state management
+- Code splitting for faster initial load
 
-## 📜 Available Scripts
+## 🔒 Security Features
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
-
-## 🚀 Deployment
-
-### GitHub Setup
-
-1. Create a new repository on GitHub
-
-2. Initialize Git and push your code:
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/virtual-mark.git
-git push -u origin main
-```
-
-### Netlify Deployment
-
-1. Sign up/Login to [Netlify](https://www.netlify.com/)
-
-2. Connect your GitHub repository:
-   - Click "New site from Git"
-   - Choose GitHub and select your repository
-   - Select the `main` branch
-
-3. Configure build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-
-4. Add environment variables:
-   - Go to Site settings > Build & deploy > Environment
-   - Add your Supabase environment variables:
-     ```
-     VITE_SUPABASE_URL=your_supabase_url
-     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-     ```
-
-5. Deploy:
-   - Netlify will automatically build and deploy your site
-   - Any future pushes to the main branch will trigger automatic deployments
-
-### Custom Domain Setup (Optional)
-
-1. In Netlify:
-   - Go to Site settings > Domain management
-   - Click "Add custom domain"
-   - Follow the instructions to configure your domain
-
-2. Configure SSL:
-   - Netlify automatically provisions SSL certificates
-   - Enable "Force HTTPS" in your site settings
-
-## 🔧 Environment Variables
-
-Required environment variables:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+- Protected admin routes
+- Secure API integrations
+- Environment variable management
+- Data validation and sanitization
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a new branch: `git checkout -b feature/your-feature-name`
-3. Make your changes
-4. Commit your changes: `git commit -m "Add some feature"`
-5. Push to the branch: `git push origin feature/your-feature-name`
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 👥 Authors
 
-- Your Name - Initial work
+- **Rafael Paragon** - _Initial work and development_
+- **Virtual Mark Team** - _Content and business logic_
 
-## 🙏 Acknowledgments
+## 📄 License
 
-- [React](https://reactjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Supabase](https://supabase.io/)
-- [Vite](https://vitejs.dev/)
+This project is proprietary software belonging to Virtual Mark.
+
+---
+
+<div align="center">
+  <p>Developed with ❤️ by Rafael Paragon for Virtual Mark</p>
+  <p>© 2025 Virtual Mark. All rights reserved.</p>
+</div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
+import { ChartBarIcon } from '@heroicons/react/24/outline'
 
 const Hero = () => {
   const [ref, inView] = useInView({
@@ -46,6 +47,14 @@ const Hero = () => {
         animate={inView ? 'visible' : 'hidden'}
         className="relative z-10 max-w-7xl mx-auto text-center"
       >
+        <motion.span
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 text-sm font-medium mb-4 border border-primary-500/20 backdrop-blur-sm"
+        >
+          <ChartBarIcon className="w-5 h-5 text-primary-500" />
+          <span className="bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 text-transparent bg-clip-text font-semibold">Marketing Digital</span>
+        </motion.span>
+
         <motion.h1
           variants={itemVariants}
           className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"

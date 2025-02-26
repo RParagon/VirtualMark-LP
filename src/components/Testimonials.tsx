@@ -29,21 +29,21 @@ const Testimonials = () => {
 
   const testimonials = [
     {
-      name: 'João Silva',
+      name: 'Fernando',
+      role: 'CEO, Negócio Local',
+      content: 'Completando 5 meses de parceria, foi feito um ótimo trabalho ao otimizar nossas campanhas e melhorar nossa presença online. A equipe foi proativa e ajudou a aumentar nossas vendas nesse curto período. Super recomendo!',
+      rating: 5
+    },
+    {
+      name: 'Thiago',
       role: 'CEO, E-commerce',
-      content: 'A XTYL transformou completamente nossa presença digital. Em apenas 6 meses, nossas vendas triplicaram!',
+      content: 'Parceria consolidada a mais de um ano. A equipe da Virtual Mark nos ajudou a melhorar nossa estratégia de Google Ads e Meta Ads, resultando em um aumento consistente nas vendas. A equipe foi eficiente em criar campanhas que realmente funcionaram para nossa loja online.',
       rating: 5
     },
     {
-      name: 'Maria Santos',
-      role: 'Diretora de Marketing, SaaS',
-      content: 'Equipe extremamente profissional e resultados impressionantes. Melhor investimento que fizemos em marketing.',
-      rating: 5
-    },
-    {
-      name: 'Pedro Oliveira',
-      role: 'Fundador, Startup B2B',
-      content: 'A expertise da equipe em marketing digital é incomparável. Superaram todas as nossas expectativas.',
+      name: 'Bruno',
+      role: 'CEO, E-commerce',
+      content: 'Ótima empresa, desde 2019 me trazendo um CPA ótimo e novos criativos, recomendo a todos!',
       rating: 5
     }
   ]

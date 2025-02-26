@@ -161,7 +161,7 @@ const Services = () => {
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl" />
               <div className="p-4 h-full bg-gradient-to-b from-primary-500/10 to-transparent">
                 <img
-                  src="/mockup-analytics.png"
+                  src="/public/mockup-analytics.png"
                   alt="Analytics Dashboard"
                   className="w-full h-full object-cover rounded-3xl"
                 />
@@ -260,15 +260,15 @@ const Services = () => {
             </motion.p>
           </div>
           <div className="lg:col-span-3 relative">
-            <div className="absolute left-8 top-0 bottom-0 w-px bg-gray-800" />
+            <div className="absolute left-9 top-0 bottom-0 w-px bg-gray-800" />
             <div className="space-y-12">
               {pillars.map((pillar, index) => (
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="relative pl-16"
+                  className="relative pl-24"
                 >
-                  <div className="absolute left-7 top-0 w-3 h-3 bg-primary-500 rounded-full transform -translate-x-1/2" />
+                  <div className="absolute left-8 top-1/2 w-3 h-3 bg-primary-500 rounded-full transform -translate-y-1/2" />
                   <h4 className="text-xl font-semibold mb-2 text-primary-500">{pillar.title}</h4>
                   <p className="text-gray-400">{pillar.description}</p>
                 </motion.div>
