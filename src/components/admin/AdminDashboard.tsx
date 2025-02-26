@@ -25,10 +25,17 @@ const AdminDashboard = () => {
   }, [user, navigate])
 
   const handleSignOut = async () => {
-    await signOut()
-    navigate('/admin')
+    try {
+      // First call the context's signOut to clear the auth state
+      await signOut()
+      // Then navigate to admin page
+      navigate('/admin')
+    } catch (error) {
+      console.error('Error signing out:', error)
+      // Force navigation to admin page even if there's an error
+      navigate('/admin')
+    }
   }
-
   const [stats, setStats] = useState([
     { name: 'Total Posts', value: '0', icon: DocumentTextIcon },
     { name: 'Total Cases', value: '0', icon: PhotoIcon },

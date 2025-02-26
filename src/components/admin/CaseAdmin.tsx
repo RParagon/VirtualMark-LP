@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useCases } from '../../contexts/CaseContext'
-import { Editor } from '@tinymce/tinymce-react'
+import { Editor } from '../../lib/tinymce'
 import { supabase } from '../../lib/supabase'
+import { defaultEditorConfig } from '../../lib/tinymce'
 
 interface CaseData {
   id: string
@@ -264,148 +265,151 @@ const CaseAdmin = () => {
                     }}
                   >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {/* Informações Básicas */}
+                      {/* Left Column - Basic Info */}
                       <div className="space-y-6">
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                           <h4 className="text-lg font-semibold text-white mb-4">Informações Básicas</h4>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Título</label>
-                            <input
-                              type="text"
-                              value={selectedCase.title}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, title: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Slug</label>
-                            <input
-                              type="text"
-                              value={selectedCase.slug}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, slug: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Descrição</label>
-                            <textarea
-                              value={selectedCase.description}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, description: e.target.value })}
-                              rows={3}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">URL da Imagem</label>
-                            <input
-                              type="text"
-                              value={selectedCase.image_url}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, image_url: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Título</label>
+                              <input
+                                type="text"
+                                value={selectedCase.title}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, title: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Slug</label>
+                              <input
+                                type="text"
+                                value={selectedCase.slug}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, slug: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Descrição</label>
+                              <textarea
+                                value={selectedCase.description}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, description: e.target.value })}
+                                rows={3}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">URL da Imagem</label>
+                              <input
+                                type="text"
+                                value={selectedCase.image_url}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, image_url: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* Informações do Cliente e Publicação */}
+                      
+                      {/* Right Column - Client Info and Publication */}
                       <div className="space-y-6">
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                           <h4 className="text-lg font-semibold text-white mb-4">Informações do Cliente</h4>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Nome do Cliente</label>
-                            <input
-                              type="text"
-                              value={selectedCase.client_name}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, client_name: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Indústria</label>
-                            <select
-                              value={selectedCase.client_industry}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, client_industry: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                            >
-                              {industries.map((industry) => (
-                                <option key={industry} value={industry}>{industry}</option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Porte</label>
-                            <select
-                              value={selectedCase.client_size}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, client_size: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                            >
-                              {clientSizes.map((size) => (
-                                <option key={size} value={size}>{size}</option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Duração</label>
-                            <input
-                              type="text"
-                              value={selectedCase.duration}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, duration: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Nome do Cliente</label>
+                              <input
+                                type="text"
+                                value={selectedCase.client_name}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, client_name: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Indústria</label>
+                              <select
+                                value={selectedCase.client_industry}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, client_industry: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              >
+                                {industries.map((industry) => (
+                                  <option key={industry} value={industry}>{industry}</option>
+                                ))}
+                              </select>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Porte</label>
+                              <select
+                                value={selectedCase.client_size}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, client_size: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              >
+                                {clientSizes.map((size) => (
+                                  <option key={size} value={size}>{size}</option>
+                                ))}
+                              </select>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Duração</label>
+                              <input
+                                type="text"
+                                value={selectedCase.duration}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, duration: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
                           </div>
                         </div>
-
+                        
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                           <h4 className="text-lg font-semibold text-white mb-4">Opções de Publicação</h4>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
-                            <select
-                              value={selectedCase.status}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, status: e.target.value as 'draft' | 'published' })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                            >
-                              <option value="draft">Draft</option>
-                              <option value="published">Published</option>
-                            </select>
-                          </div>
-
-                          <div className="flex items-center space-x-3">
-                            <input
-                              type="checkbox"
-                              checked={selectedCase.featured}
-                              onChange={(e) => setSelectedCase({ ...selectedCase, featured: e.target.checked })}
-                              className="w-5 h-5 text-primary-600 border-gray-700 rounded bg-gray-900/50 focus:ring-primary-500"
-                              id="featured-case"
-                            />
-                            <label htmlFor="featured-case" className="text-sm text-gray-300 select-none cursor-pointer">
-                              Case em Destaque
-                            </label>
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                              <select
+                                value={selectedCase.status}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, status: e.target.value as 'draft' | 'published' })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                              </select>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedCase.featured}
+                                onChange={(e) => setSelectedCase({ ...selectedCase, featured: e.target.checked })}
+                                className="w-5 h-5 text-primary-600 border-gray-700 rounded bg-gray-900/50 focus:ring-primary-500"
+                                id="featured-case"
+                              />
+                              <label htmlFor="featured-case" className="text-sm text-gray-300 select-none cursor-pointer">
+                                Case em Destaque
+                              </label>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-
+                    
                     {/* Seção de Métricas */}
                     <div className="mt-8 bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                       <h4 className="text-lg font-semibold text-white mb-4">Métricas</h4>
                       <div className="space-y-4">
                         {selectedCase.metrics.map((metric, index) => (
-                          <div key={index} className="flex gap-4">
+                          <div key={index} className="flex gap-4 items-end">
                             <div className="flex-1">
                               <label className="block text-sm font-medium text-gray-300 mb-2">Valor</label>
                               <input
@@ -438,7 +442,7 @@ const CaseAdmin = () => {
                                 const newMetrics = selectedCase.metrics.filter((_, i) => i !== index)
                                 setSelectedCase({ ...selectedCase, metrics: newMetrics })
                               }}
-                              className="self-end px-3 py-2.5 text-gray-400 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
+                              className="px-3 py-2.5 text-gray-400 hover:text-white hover:bg-red-500/20 rounded-lg transition-colors"
                             >
                               <TrashIcon className="w-5 h-5" />
                             </button>
@@ -458,65 +462,52 @@ const CaseAdmin = () => {
                         </button>
                       </div>
                     </div>
-
+                    
                     {/* Seção de Detalhes com Rich Text Editors */}
                     <div className="mt-8 bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-6">
                       <h4 className="text-lg font-semibold text-white mb-4">Detalhes do Case</h4>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Desafio</label>
-                        <Editor
-                          value={selectedCase.challenge}
-                          onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, challenge: content })}
-                          init={{
-                            height: 200,
-                            menubar: false,
-                            plugins: [
-                              'advlist autolink lists link image charmap print preview anchor',
-                              'searchreplace visualblocks code fullscreen',
-                              'insertdatetime media table paste code help wordcount'
-                            ],
-                            toolbar:
-                              'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Solução</label>
-                        <Editor
-                          value={selectedCase.solution}
-                          onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, solution: content })}
-                          init={{
-                            height: 200,
-                            menubar: false,
-                            plugins: [
-                              'advlist autolink lists link image charmap print preview anchor',
-                              'searchreplace visualblocks code fullscreen',
-                              'insertdatetime media table paste code help wordcount'
-                            ],
-                            toolbar:
-                              'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Resultados</label>
-                        <Editor
-                          value={selectedCase.results}
-                          onEditorChange={(content: string) => setSelectedCase({ ...selectedCase, results: content })}
-                          init={{
-                            height: 200,
-                            menubar: false,
-                            plugins: [
-                              'advlist autolink lists link image charmap print preview anchor',
-                              'searchreplace visualblocks code fullscreen',
-                              'insertdatetime media table paste code help wordcount'
-                            ],
-                            toolbar:
-                              'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
-                          }}
-                        />
+                      <div className="space-y-8">
+                        <div className="editor-container">
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Desafio</label>
+                          <div className="relative">
+                            <Editor
+                              value={selectedCase.challenge}
+                              onChange={(content: string) => setSelectedCase({ ...selectedCase, challenge: content })}
+                              modules={defaultEditorConfig.modules}
+                              formats={defaultEditorConfig.formats}
+                              theme={defaultEditorConfig.theme}
+                              style={defaultEditorConfig.style}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="editor-container">
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Solução</label>
+                          <div className="relative">
+                            <Editor
+                              value={selectedCase.solution}
+                              onChange={(content: string) => setSelectedCase({ ...selectedCase, solution: content })}
+                              modules={defaultEditorConfig.modules}
+                              formats={defaultEditorConfig.formats}
+                              theme={defaultEditorConfig.theme}
+                              style={defaultEditorConfig.style}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="editor-container">
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Resultados</label>
+                          <div className="relative">
+                            <Editor
+                              value={selectedCase.results}
+                              onChange={(content: string) => setSelectedCase({ ...selectedCase, results: content })}
+                              modules={defaultEditorConfig.modules}
+                              formats={defaultEditorConfig.formats}
+                              theme={defaultEditorConfig.theme}
+                              style={defaultEditorConfig.style}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
 

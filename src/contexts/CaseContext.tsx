@@ -42,26 +42,16 @@ export function CaseProvider({ children }: { children: React.ReactNode }) {
 
   const fetchCases = async () => {
     try {
-      const session = await supabase.auth.getSession()
-      const isAdmin = !!session.data.session
-
-      const query = supabase
+      const { data, error } = await supabase
         .from('cases')
         .select('*')
         .order('created_at', { ascending: false })
-
-      if (!isAdmin) {
-        query.eq('status', 'published')
-      }
-
-      const { data, error } = await query
 
       if (error) throw error
 
       setCases(data || [])
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch cases'))
-      setCases([])
     } finally {
       setLoading(false)
     }

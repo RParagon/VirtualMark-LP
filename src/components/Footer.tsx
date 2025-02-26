@@ -73,7 +73,7 @@ const Footer = () => {
         <motion.div variants={itemVariants} className="text-center mb-12">
           <Link to="/" className="inline-block mb-4">
             <div className="flex items-center justify-center gap-2">
-              <img src="/vm-logo.svg" alt="VirtualMark Logo" className="h-8" />
+              <img src="/vm-logo.png" alt="VirtualMark Logo" className="h-8" />
               <h3 className="text-3xl font-bold tracking-wide">
                 <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-transparent bg-clip-text">
                   VirtualMark

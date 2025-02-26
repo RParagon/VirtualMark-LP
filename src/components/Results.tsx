@@ -38,12 +38,12 @@ const Results = () => {
       description:
         'A Game Safari é especializada na revenda de produtos digitais (ex.: Game Pass, Netflix e outros serviços de streaming). A Virtual Mark implementou estratégias de marketing multicanal para aumentar as vendas e o ROI, otimizando campanhas de conversão tanto no Google quanto no Meta Ads. Também aplicamos técnicas avançadas de remarketing para reter e engajar o público interessado.',
       // Ferramentas utilizadas
-      tools: ['Google Ads', 'Meta Ads', 'Email Marketing'],
+      tools: ['Google Ads', 'Meta Ads', 'Marketing de Conteudo', 'Shopfy'],
       // Métricas (exemplos para destacar bons resultados)
       metrics: [
         { value: '+200%', label: 'Aumento de ROI' },
         { value: '+800', label: 'Novos Assinantes Mensais' },
-        { value: '+1500', label: 'Vendas Totais' }
+        { value: '+1500', label: 'Vendas Mensais' }
       ],
       // Imagem (16:9) - Sugestão de dimensão: ~1200x675px
       // Substitua por um path real no seu projeto ou um placeholder
@@ -56,10 +56,10 @@ const Results = () => {
       description:
         'A Amazônia Vital é uma loja de roupas femininas com forte presença online. Para impulsionar as vendas, trabalhamos campanhas segmentadas voltadas ao público-alvo feminino, otimizando anúncios de catálogo e ações de conversão. Também criamos estratégias de upsell e cross-sell para maximizar o ROI em cada etapa do funil de vendas.',
       // Ferramentas utilizadas
-      tools: ['Meta Ads', 'Google Ads', 'CRM Integrado'],
+      tools: ['Meta Ads', 'Google Ads', 'Youtube Ads', 'Loja Integrada'],
       // Métricas de exemplo
       metrics: [
-        { value: '+300%', label: 'Crescimento em Faturamento' },
+        { value: '+250%', label: 'Crescimento em Faturamento' },
         { value: '+1200', label: 'Novas Clientes Fiéis' },
         { value: '+95%', label: 'Aumento na Taxa de Retorno' }
       ],
@@ -73,7 +73,7 @@ const Results = () => {
       description:
         'A Colonial Guararema atua no segmento de materiais de construção e precisava gerar leads qualificados via WhatsApp para o departamento de vendas. Implantamos estratégias de anúncios segmentados, integrando campanhas de captação de leads no Google e no Meta. Além disso, criamos formulários e landing pages otimizadas, direcionando os usuários diretamente para o WhatsApp da equipe comercial.',
       // Ferramentas utilizadas
-      tools: ['Google Ads', 'Meta Ads', 'WhatsApp Business'],
+      tools: ['Google Ads', 'Meta Ads', 'WhatsApp Business', 'Treinameto Personalizado'],
       // Métricas de exemplo
       metrics: [
         { value: '+400%', label: 'Leads Qualificados' },

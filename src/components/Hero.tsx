@@ -31,14 +31,27 @@ const Hero = () => {
   }
 
   const stats = [
-    { title: '+40 Milhões', subtitle: 'Faturados para nossos Clientes' },
+    { title: '+10 Milhões', subtitle: 'Faturados para nossos Clientes' },
     { title: '+1,5 Milhões', subtitle: 'Investidos em anúncios' },
-    { title: '+5 Mil', subtitle: 'Anúncios criados no Meta' }
+    { title: '+5 Mil', subtitle: 'Anúncios criados no Google & Meta' }
   ]
 
   return (
     <section className="relative min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-radial from-primary-950/20 via-background to-background z-0" />
+      <motion.div 
+        initial={{ opacity: 0, scale: 1.1 }}
+        animate={{ 
+          opacity: 0.80,
+          scale: 1,
+          x: 0
+        }}
+        transition={{ 
+          duration: 1.5,
+          ease: 'easeOut'
+        }}
+        className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat z-0 scale-100"
+      />
+      <div className="absolute inset-0 bg-gradient-radial from-primary-950/30 via-background to-background z-0" />
       
       <motion.div
         ref={ref}
@@ -46,6 +59,7 @@ const Hero = () => {
         initial="hidden"
         animate={inView ? 'visible' : 'hidden'}
         className="relative z-10 max-w-7xl mx-auto text-center"
+        style={{ position: 'relative' }}
       >
         <motion.span
           variants={itemVariants}

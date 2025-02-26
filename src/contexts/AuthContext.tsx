@@ -93,20 +93,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error('Error during signOut:', error)
-        throw error
-      }
-      
-      // Clear all auth-related state and storage
+      // Clear all auth-related state and storage first
       setSession(null)
       setUser(null)
       localStorage.removeItem('rememberMe')
       localStorage.removeItem('userEmail')
+      
+      // Then attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Error during signOut:', error)
+      }
     } catch (error) {
       console.error('Error executing signOut:', error)
-      throw error
     }
   }
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { usePosts } from '../../contexts/PostContext'
-import { Editor } from '@tinymce/tinymce-react'
+import { Editor } from '../../lib/tinymce'
+import { defaultEditorConfig } from '../../lib/tinymce'
 
 interface BlogPost {
   id: string
@@ -189,100 +190,102 @@ const BlogAdmin = () => {
                       handleSavePost(selectedPost)
                     }}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {/* Informações Básicas */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                      {/* Left Column - Basic Info */}
                       <div className="space-y-6">
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                           <h4 className="text-lg font-semibold text-white mb-4">Informações Básicas</h4>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Título</label>
-                            <input
-                              type="text"
-                              value={selectedPost.title}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Resumo</label>
-                            <textarea
-                              value={selectedPost.excerpt}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, excerpt: e.target.value })}
-                              rows={3}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">URL da Imagem</label>
-                            <input
-                              type="text"
-                              value={selectedPost.imageUrl}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, imageUrl: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Título</label>
+                              <input
+                                type="text"
+                                value={selectedPost.title}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Resumo</label>
+                              <textarea
+                                value={selectedPost.excerpt}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, excerpt: e.target.value })}
+                                rows={3}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">URL da Imagem</label>
+                              <input
+                                type="text"
+                                value={selectedPost.imageUrl}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, imageUrl: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* Opções do Post */}
+                      
+                      {/* Right Column - Post Options */}
                       <div className="space-y-6">
                         <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 space-y-4">
                           <h4 className="text-lg font-semibold text-white mb-4">Opções do Post</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Categoria</label>
+                              <select
+                                value={selectedPost.category}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, category: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                              >
+                                {categories.map((category) => (
+                                  <option key={category} value={category}>
+                                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Autor</label>
+                              <input
+                                type="text"
+                                value={selectedPost.author}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, author: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Data</label>
+                              <input
+                                type="date"
+                                value={selectedPost.date}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, date: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-2">Tempo de Leitura</label>
+                              <input
+                                type="text"
+                                value={selectedPost.readTime}
+                                onChange={(e) => setSelectedPost({ ...selectedPost, readTime: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                                required
+                              />
+                            </div>
+                          </div>
                           
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Categoria</label>
-                            <select
-                              value={selectedPost.category}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, category: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                            >
-                              {categories.map((category) => (
-                                <option key={category} value={category}>
-                                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Autor</label>
-                            <input
-                              type="text"
-                              value={selectedPost.author}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, author: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Data</label>
-                            <input
-                              type="date"
-                              value={selectedPost.date}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, date: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Tempo de Leitura</label>
-                            <input
-                              type="text"
-                              value={selectedPost.readTime}
-                              onChange={(e) => setSelectedPost({ ...selectedPost, readTime: e.target.value })}
-                              className="w-full px-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
-                              required
-                            />
-                          </div>
-
                           <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
                             <select
@@ -294,8 +297,8 @@ const BlogAdmin = () => {
                               <option value="published">Published</option>
                             </select>
                           </div>
-
-                          <div className="flex items-center space-x-3">
+                          
+                          <div className="flex items-center space-x-3 mt-4">
                             <input
                               type="checkbox"
                               checked={selectedPost.featured}
@@ -310,25 +313,20 @@ const BlogAdmin = () => {
                         </div>
                       </div>
                     </div>
-
+                    
                     {/* Editor de Conteúdo */}
                     <div className="mt-8 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
                       <h4 className="text-lg font-semibold text-white mb-4">Conteúdo</h4>
-                      <Editor
-                        value={selectedPost.content}
-                        onEditorChange={(content: string) => setSelectedPost({ ...selectedPost, content })}
-                        init={{
-                          height: 500,
-                          menubar: false,
-                          plugins: [
-                            'advlist autolink lists link image charmap print preview anchor',
-                            'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table paste code help wordcount'
-                          ],
-                          toolbar:
-                            'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
-                        }}
-                      />
+                      <div className="min-h-[400px]">
+                        <Editor
+                          value={selectedPost.content}
+                          onChange={(content: string) => setSelectedPost({ ...selectedPost, content })}
+                          modules={defaultEditorConfig.modules}
+                          formats={defaultEditorConfig.formats}
+                          theme={defaultEditorConfig.theme}
+                          style={{ ...defaultEditorConfig.style, minHeight: '400px' }}
+                        />
+                      </div>
                     </div>
 
                     {/* Ações do Formulário */}
