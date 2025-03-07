@@ -100,7 +100,7 @@ const TrafficManagement = () => {
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
               Na VirtualMark, impulsionamos suas campanhas de anúncios para o
               próximo nível, combinando inteligência de dados e estratégias
-              altamente segmentadas. Converta tráfego em <strong>resultados reais</strong>
+              altamente segmentadas. Converta tráfego em <strong>resultados reais </strong>
               e maximize seu ROI.
             </p>
           </motion.div>
