@@ -51,7 +51,7 @@ const Results = () => {
     },
     {
       // 2) Amazônia Vital
-      title: 'Amazônia Vital',
+      title: 'DDTizz',
       // Descrição enfatizando foco em vendas, ROI, loja de roupa feminina
       description:
         'A Amazônia Vital é uma loja de roupas femininas com forte presença online. Para impulsionar as vendas, trabalhamos campanhas segmentadas voltadas ao público-alvo feminino, otimizando anúncios de catálogo e ações de conversão. Também criamos estratégias de upsell e cross-sell para maximizar o ROI em cada etapa do funil de vendas.',
@@ -64,7 +64,7 @@ const Results = () => {
         { value: '+95%', label: 'Aumento na Taxa de Retorno' }
       ],
       // Sugestão de dimensão: ~1200x675px
-      image: '/amazonia-vital.png'
+      image: '/ddtizz.png'
     },
     {
       // 3) Colonial Guararema
