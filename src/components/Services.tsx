@@ -199,8 +199,8 @@ const Services = () => {
               className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-xl border border-gray-800 transform transition-all duration-300"
             >
               <ChartBarIcon className="w-12 h-12 text-primary-500 mb-6" />
-              <h3 className="text-xl font-semibold mb-4">CRM</h3>
-              <p className="text-gray-400">Gerencie o relacionamento com seu cliente em um só lugar. Visualize todo o seu funil de vendas e mantenha conexão com seus clientes para vender mais.</p>
+              <h3 className="text-xl font-semibold mb-4">Dashboard Personalizado</h3>
+              <p className="text-gray-400">Descubra o poder dos seus dados com uma visualização completa e feita sob medida. Identifique oportunidades, conecte-se estrategicamente com seu público e impulsione resultados, transformando cada insight em crescimento e inovação para seu negócio.</p>
             </motion.div>
           </motion.div>
         </motion.div>
